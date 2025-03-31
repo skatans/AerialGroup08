@@ -1,0 +1,97 @@
+[0.000000] (-) TimerEvent: {}
+[0.002815] (opencv_package) JobQueued: {'identifier': 'opencv_package', 'dependencies': OrderedDict()}
+[0.003567] (opencv_package) JobStarted: {'identifier': 'opencv_package'}
+[0.101215] (-) TimerEvent: {}
+[0.203310] (-) TimerEvent: {}
+[0.304463] (-) TimerEvent: {}
+[0.406259] (-) TimerEvent: {}
+[0.507396] (-) TimerEvent: {}
+[0.608918] (-) TimerEvent: {}
+[0.710512] (-) TimerEvent: {}
+[0.811636] (-) TimerEvent: {}
+[0.912742] (-) TimerEvent: {}
+[1.014170] (-) TimerEvent: {}
+[1.115743] (-) TimerEvent: {}
+[1.216317] (-) TimerEvent: {}
+[1.316938] (-) TimerEvent: {}
+[1.418709] (-) TimerEvent: {}
+[1.520483] (-) TimerEvent: {}
+[1.621999] (-) TimerEvent: {}
+[1.724259] (-) TimerEvent: {}
+[1.825493] (-) TimerEvent: {}
+[1.928022] (-) TimerEvent: {}
+[2.034798] (-) TimerEvent: {}
+[2.136500] (-) TimerEvent: {}
+[2.238538] (-) TimerEvent: {}
+[2.339361] (-) TimerEvent: {}
+[2.440437] (-) TimerEvent: {}
+[2.541552] (-) TimerEvent: {}
+[2.643404] (-) TimerEvent: {}
+[2.745287] (-) TimerEvent: {}
+[2.846221] (-) TimerEvent: {}
+[2.948161] (-) TimerEvent: {}
+[3.049904] (-) TimerEvent: {}
+[3.150501] (-) TimerEvent: {}
+[3.250880] (-) TimerEvent: {}
+[3.351451] (-) TimerEvent: {}
+[3.453026] (-) TimerEvent: {}
+[3.553789] (-) TimerEvent: {}
+[3.654516] (-) TimerEvent: {}
+[3.756236] (-) TimerEvent: {}
+[3.858026] (-) TimerEvent: {}
+[3.959126] (-) TimerEvent: {}
+[4.061111] (-) TimerEvent: {}
+[4.162166] (-) TimerEvent: {}
+[4.262692] (-) TimerEvent: {}
+[4.363284] (-) TimerEvent: {}
+[4.463998] (-) TimerEvent: {}
+[4.565726] (-) TimerEvent: {}
+[4.667532] (-) TimerEvent: {}
+[4.766110] (opencv_package) Command: {'cmd': ['/usr/bin/python3', 'setup.py', 'egg_info', '--egg-base', '../../build/opencv_package', 'build', '--build-base', '/home/sandra/common_project_ws/build/opencv_package/build', 'install', '--prefix', '/home/sandra/common_project_ws/install/opencv_package', '--record', '/home/sandra/common_project_ws/build/opencv_package/install.log', '--single-version-externally-managed'], 'cwd': '/home/sandra/common_project_ws/src/opencv_package', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'sandra', 'LC_TIME': 'fi_FI.UTF-8', 'SSH_AGENT_PID': '1734', 'XDG_SESSION_TYPE': 'x11', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/galactic/opt/yaml_cpp_vendor/lib:/opt/ros/galactic/opt/rviz_ogre_vendor/lib:/opt/ros/galactic/lib/x86_64-linux-gnu:/opt/ros/galactic/lib', 'HOME': '/home/sandra', 'OLDPWD': '/home/sandra', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'LC_MONETARY': 'fi_FI.UTF-8', 'MANAGERPID': '1554', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'TERMINATOR_DBUS_NAME': 'net.tenshu.Terminator21a9d5db22c73a993ff0b42f64b396873', 'GIO_LAUNCHED_DESKTOP_FILE_PID': '6321', 'IM_CONFIG_PHASE': '1', 'ROS_DISTRO': 'galactic', 'LOGNAME': 'sandra', 'JOURNAL_STREAM': '8:53389', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'sandra', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'ROS_LOCALHOST_ONLY': '0', 'WINDOWPATH': '2', 'PATH': '/opt/ros/galactic/bin:/home/sandra/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin', 'SESSION_MANAGER': 'local/sandra-HP-EliteBook:@/tmp/.ICE-unix/1772,unix/sandra-HP-EliteBook:/tmp/.ICE-unix/1772', 'INVOCATION_ID': '5d0573c106ec4645ac68fa0ed7ffab32', 'XDG_MENU_PREFIX': 'gnome-', 'LC_ADDRESS': 'fi_FI.UTF-8', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'TERMINATOR_DBUS_PATH': '/net/tenshu/Terminator2', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'LC_TELEPHONE': 'fi_FI.UTF-8', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/gdm/Xauthority', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/opt/ros/galactic', 'SHELL': '/bin/bash', 'LC_NAME': 'fi_FI.UTF-8', 'TERMINATOR_UUID': 'urn:uuid:eb2e2ac9-1937-40ec-bdba-db940e1c0517', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'LC_MEASUREMENT': 'fi_FI.UTF-8', 'GPG_AGENT_INFO': '/run/user/1000/gnupg/S.gpg-agent:0:1', 'LC_IDENTIFICATION': 'fi_FI.UTF-8', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/sandra/common_project_ws/build/opencv_package', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/sandra/common_project_ws/install/opencv_package/lib/python3.8/site-packages:/opt/ros/galactic/lib/python3.8/site-packages', 'LC_NUMERIC': 'fi_FI.UTF-8', 'LC_PAPER': 'fi_FI.UTF-8', 'COLCON': '1', 'VTE_VERSION': '6003'}, 'shell': False}
+[4.784033] (-) TimerEvent: {}
+[4.886271] (-) TimerEvent: {}
+[4.988108] (-) TimerEvent: {}
+[5.089978] (-) TimerEvent: {}
+[5.191170] (-) TimerEvent: {}
+[5.293209] (-) TimerEvent: {}
+[5.395073] (-) TimerEvent: {}
+[5.497069] (-) TimerEvent: {}
+[5.598646] (-) TimerEvent: {}
+[5.700954] (-) TimerEvent: {}
+[5.801792] (-) TimerEvent: {}
+[5.903129] (-) TimerEvent: {}
+[6.004524] (-) TimerEvent: {}
+[6.105958] (-) TimerEvent: {}
+[6.208094] (-) TimerEvent: {}
+[6.309399] (-) TimerEvent: {}
+[6.410944] (-) TimerEvent: {}
+[6.512543] (-) TimerEvent: {}
+[6.516224] (opencv_package) StdoutLine: {'line': b'running egg_info\n'}
+[6.519845] (opencv_package) StdoutLine: {'line': b'writing ../../build/opencv_package/opencv_package.egg-info/PKG-INFO\n'}
+[6.522464] (opencv_package) StdoutLine: {'line': b'writing dependency_links to ../../build/opencv_package/opencv_package.egg-info/dependency_links.txt\n'}
+[6.525918] (opencv_package) StdoutLine: {'line': b'writing entry points to ../../build/opencv_package/opencv_package.egg-info/entry_points.txt\n'}
+[6.527911] (opencv_package) StdoutLine: {'line': b'writing requirements to ../../build/opencv_package/opencv_package.egg-info/requires.txt\n'}
+[6.529869] (opencv_package) StdoutLine: {'line': b'writing top-level names to ../../build/opencv_package/opencv_package.egg-info/top_level.txt\n'}
+[6.612846] (-) TimerEvent: {}
+[6.714454] (-) TimerEvent: {}
+[6.749607] (opencv_package) StdoutLine: {'line': b"reading manifest file '../../build/opencv_package/opencv_package.egg-info/SOURCES.txt'\n"}
+[6.751534] (opencv_package) StdoutLine: {'line': b"writing manifest file '../../build/opencv_package/opencv_package.egg-info/SOURCES.txt'\n"}
+[6.752310] (opencv_package) StdoutLine: {'line': b'running build\n'}
+[6.754966] (opencv_package) StdoutLine: {'line': b'running build_py\n'}
+[6.757608] (opencv_package) StdoutLine: {'line': b'running install\n'}
+[6.763421] (opencv_package) StdoutLine: {'line': b'running install_lib\n'}
+[6.772900] (opencv_package) StdoutLine: {'line': b'running install_data\n'}
+[6.774303] (opencv_package) StdoutLine: {'line': b'running install_egg_info\n'}
+[6.784854] (opencv_package) StdoutLine: {'line': b"removing '/home/sandra/common_project_ws/install/opencv_package/lib/python3.8/site-packages/opencv_package-0.0.0-py3.8.egg-info' (and everything under it)\n"}
+[6.785956] (opencv_package) StdoutLine: {'line': b'Copying ../../build/opencv_package/opencv_package.egg-info to /home/sandra/common_project_ws/install/opencv_package/lib/python3.8/site-packages/opencv_package-0.0.0-py3.8.egg-info\n'}
+[6.788834] (opencv_package) StdoutLine: {'line': b'running install_scripts\n'}
+[6.814626] (-) TimerEvent: {}
+[6.904704] (opencv_package) StdoutLine: {'line': b'Installing img_det script to /home/sandra/common_project_ws/install/opencv_package/lib/opencv_package\n'}
+[6.907523] (opencv_package) StdoutLine: {'line': b'Installing img_sub script to /home/sandra/common_project_ws/install/opencv_package/lib/opencv_package\n'}
+[6.911186] (opencv_package) StdoutLine: {'line': b"writing list of installed files to '/home/sandra/common_project_ws/build/opencv_package/install.log'\n"}
+[6.914730] (-) TimerEvent: {}
+[7.015312] (-) TimerEvent: {}
+[7.079753] (opencv_package) CommandEnded: {'returncode': 0}
+[7.119288] (-) TimerEvent: {}
+[7.196675] (opencv_package) JobEnded: {'identifier': 'opencv_package', 'rc': 0}
+[7.200172] (-) EventReactorShutdown: {}

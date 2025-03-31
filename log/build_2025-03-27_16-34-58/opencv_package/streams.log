@@ -1,0 +1,25 @@
+[6.505s] Invoking command in '/home/sandra/common_project_ws/src/opencv_package': PYTHONPATH=/home/sandra/common_project_ws/install/opencv_package/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/opencv_package build --build-base /home/sandra/common_project_ws/build/opencv_package/build install --prefix /home/sandra/common_project_ws/install/opencv_package --record /home/sandra/common_project_ws/build/opencv_package/install.log --single-version-externally-managed
+[8.995s] running egg_info
+[8.998s] writing ../../build/opencv_package/opencv_package.egg-info/PKG-INFO
+[8.999s] writing dependency_links to ../../build/opencv_package/opencv_package.egg-info/dependency_links.txt
+[8.999s] writing entry points to ../../build/opencv_package/opencv_package.egg-info/entry_points.txt
+[9.000s] writing requirements to ../../build/opencv_package/opencv_package.egg-info/requires.txt
+[9.001s] writing top-level names to ../../build/opencv_package/opencv_package.egg-info/top_level.txt
+[9.410s] reading manifest file '../../build/opencv_package/opencv_package.egg-info/SOURCES.txt'
+[9.424s] writing manifest file '../../build/opencv_package/opencv_package.egg-info/SOURCES.txt'
+[9.424s] running build
+[9.424s] running build_py
+[9.425s] copying opencv_package/image_subscriber.py -> /home/sandra/common_project_ws/build/opencv_package/build/lib/opencv_package
+[9.427s] running install
+[9.438s] running install_lib
+[9.453s] copying /home/sandra/common_project_ws/build/opencv_package/build/lib/opencv_package/image_subscriber.py -> /home/sandra/common_project_ws/install/opencv_package/lib/python3.8/site-packages/opencv_package
+[9.456s] byte-compiling /home/sandra/common_project_ws/install/opencv_package/lib/python3.8/site-packages/opencv_package/image_subscriber.py to image_subscriber.cpython-38.pyc
+[9.481s] running install_data
+[9.482s] running install_egg_info
+[9.499s] removing '/home/sandra/common_project_ws/install/opencv_package/lib/python3.8/site-packages/opencv_package-0.0.0-py3.8.egg-info' (and everything under it)
+[9.501s] Copying ../../build/opencv_package/opencv_package.egg-info to /home/sandra/common_project_ws/install/opencv_package/lib/python3.8/site-packages/opencv_package-0.0.0-py3.8.egg-info
+[9.512s] running install_scripts
+[9.703s] Installing img_det script to /home/sandra/common_project_ws/install/opencv_package/lib/opencv_package
+[9.705s] Installing img_sub script to /home/sandra/common_project_ws/install/opencv_package/lib/opencv_package
+[9.708s] writing list of installed files to '/home/sandra/common_project_ws/build/opencv_package/install.log'
+[9.921s] Invoked command in '/home/sandra/common_project_ws/src/opencv_package' returned '0': PYTHONPATH=/home/sandra/common_project_ws/install/opencv_package/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/opencv_package build --build-base /home/sandra/common_project_ws/build/opencv_package/build install --prefix /home/sandra/common_project_ws/install/opencv_package --record /home/sandra/common_project_ws/build/opencv_package/install.log --single-version-externally-managed

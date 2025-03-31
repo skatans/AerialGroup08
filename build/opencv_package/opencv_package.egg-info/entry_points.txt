@@ -1,0 +1,4 @@
+[console_scripts]
+img_det = opencv_package.object_detection:main
+img_sub = opencv_package.image_subscriber:main
+
