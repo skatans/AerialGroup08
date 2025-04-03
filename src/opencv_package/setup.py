@@ -22,6 +22,7 @@ setup(
         'console_scripts': [
             'img_sub = opencv_package.image_subscriber:main',
             'img_det = opencv_package.object_detection:main',
+            'gate_det = opencv_package.gate_detection:main',
         ],
     },
 )
