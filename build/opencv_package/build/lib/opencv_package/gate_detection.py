@@ -16,21 +16,21 @@ class GateDetector(Node):
         )
         self.subscription = self.create_subscription(
             Image,
-            '/drone1/image_raw',
+            '/image_raw',
             self.listener_callback,
             qos_profile=qos_profile)
         self.br = CvBridge()
     
     def listener_callback(self, data):
         self.get_logger().info('Receiving video frame')
-        #frame = self.br.imgmsg_to_cv2(data, 'bgr8')
-        frame = cv2.imread("/home/sandra/Downloads/circle_gate.jpeg", cv2.IMREAD_COLOR)
-        cv2.imshow("Received frame", frame)
+        frame = self.br.imgmsg_to_cv2(data, 'bgr8')
+        #frame = cv2.imread("/home/sandra/Downloads/circle_gate.jpeg", cv2.IMREAD_COLOR)
+        #cv2.imshow("Received frame", frame)
         cv2.waitKey(1)
 
         # Preprocess the image with conversion to grayscale and gaussian blur to reduce noice in the image
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        blur = cv2.GaussianBlur(frame, (15, 15), 0)
+        blur = cv2.GaussianBlur(gray, (15, 15), 0)
 
         ### TEST CODE STARTS ###
         #kernel_25 = np.ones((25,25), dtype=np.float32) / 625.0
@@ -38,19 +38,19 @@ class GateDetector(Node):
         #output_kernel = cv2.filter2D(gray, -1, kernel_25)
         #blur = cv2.blur(gray, (25,25))
 
-        cv2.imshow("Blurred frame", blur)
+        #cv2.imshow("Blurred frame", blur)
         cv2.waitKey(1)
         ### TEST CODE ENDS ##
 
         # Detect edges, highlighting the significant transitions in pixel intensity (usually correspons to object boundaries)
         # ADJUST THE THRESHOLDS TO CONTROL THE SENSITIVITY OF EDGE DETECTION
-        edges = cv2.Canny(blur, 30, 150)
+        edges = cv2.Canny(blur, 30, 100)
 
         # Find countours in the edge-detected image (adjust the second argument for other contour retrieval modes)
         contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         
         ### TEST CODE STARTS ###
-        output = frame.copy()
+        output = blur.copy()
         cv2.drawContours(output, contours, -1, (0,255,0), 3)
         cv2.imshow("Contoured frame", output)
         cv2.waitKey(1)
@@ -74,7 +74,7 @@ class GateDetector(Node):
 
             output = frame.copy()
             cv2.drawContours(output, [approx], 0, (0,255,0), 2)
-            cv2.imshow("Approximated Contour", output)
+            #cv2.imshow("Approximated Contour", output)
             cv2.waitKey(1)
             
 
