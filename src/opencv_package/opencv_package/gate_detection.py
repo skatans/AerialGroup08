@@ -7,6 +7,10 @@ from rclpy.qos import QoSProfile, QoSReliabilityPolicy
 import cv2
 import numpy as np
 
+plywood_light = [(10, 30), (0,40), (220,255)]
+plywood_mid = [(10, 30), (10,100), (200,255)]
+plywood_dark= [(10, 30), (10,100), (150,230)]
+
 class GateDetector(Node):
     def __init__(self):
         super().__init__('gate_detector')
@@ -28,79 +32,97 @@ class GateDetector(Node):
         detect_gate(frame)
 
 def test():
-    frame = cv2.imread("/home/tuisku/Pictures/portti2.jpeg", cv2.IMREAD_COLOR)
+    frame = cv2.imread("/home/tuisku/Pictures/portti.jpeg", cv2.IMREAD_COLOR)
     detect_gate(frame)
 
 
 def detect_gate(image):
     frame = image
     blur = cv2.GaussianBlur(frame,(15,15),0)
-    #cv2.imshow("Received frame", frame)
     cv2.waitKey(1)
-    # Convert the image to grayscale for shape detection
-    #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     '''FILTERING'''
     # green mask
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    lower_green = np.array([40, 20, 20])
-    upper_green = np.array([80, 255, 255])
+    lower_green = np.array([60, 100, 10])
+    upper_green = np.array([80, 255, 250])
     mask = cv2.inRange(hsv, lower_green, upper_green)
 
-    kernel = np.ones((5,5),np.uint8)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
     morph = mask
-    morph = cv2.erode(morph,kernel,iterations = 2)
-    morph = cv2.dilate(morph,kernel,iterations = 2)
+    morph = cv2.erode(morph,kernel,iterations = 3)
+    morph = cv2.dilate(morph,kernel,iterations = 4)
 
     mask = morph
     
-    # plywood mask
-    lower_plywood_bgr0 = np.array([90, 120, 150])
-    upper_plywood_bgr0 = np.array([140, 170, 210])
-    plywood_mask_bgr0 = cv2.inRange(blur, lower_plywood_bgr0, upper_plywood_bgr0)
+    # plywood mask using HSV
+    plywood = plywood_mid
+    hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
+    lower_plywood_hsv = np.array([plywood[0][0], plywood[1][0], plywood[2][0]])
+    upper_plywood_hsv = np.array([plywood[0][1], plywood[1][1], plywood[2][1]])
+    plywood_mask_hsv = cv2.inRange(hsv, lower_plywood_hsv, upper_plywood_hsv)
 
-    lower_plywood_bgr1 = np.array([130, 160, 190])
-    upper_plywood_bgr1 = np.array([160, 190, 230])
-    plywood_mask_bgr1 = cv2.inRange(blur, lower_plywood_bgr1, upper_plywood_bgr1)
+    morph = plywood_mask_hsv
+    morph = cv2.erode(morph, kernel, iterations=3)
+    morph = cv2.dilate(morph, kernel, iterations=4)
 
-    lower_plywood_bgr2 = np.array([150, 180, 210])
-    upper_plywood_bgr2 = np.array([190, 220, 240])
-    plywood_mask_bgr2 = cv2.inRange(blur, lower_plywood_bgr2, upper_plywood_bgr2)
-
-    lower_plywood_bgr3 = np.array([170, 200, 230])
-    upper_plywood_bgr3 = np.array([230, 240, 255])
-    plywood_mask_bgr3 = cv2.inRange(blur, lower_plywood_bgr3, upper_plywood_bgr3)
-
-    #lower_plywood_bgr4 = np.array([180, 200, 230])
-    #upper_plywood_bgr4 = np.array([220, 240, 255])
-    #plywood_mask_bgr4 = cv2.inRange(frame, lower_plywood_bgr4, upper_plywood_bgr4)
-
-    # Combine all plywood masks
-    plywood_mask_bgr = cv2.bitwise_or(plywood_mask_bgr1, plywood_mask_bgr2)
-    plywood_mask_bgr = cv2.bitwise_or(plywood_mask_bgr, plywood_mask_bgr0)
-    plywood_mask_bgr = cv2.bitwise_or(plywood_mask_bgr, plywood_mask_bgr3)
-
-    morph = plywood_mask_bgr
-    morph = cv2.erode(morph,kernel,iterations = 2)
-    morph = cv2.dilate(morph,kernel,iterations = 2)
-
-    plywood_mask_bgr = morph
+    plywood_mask_hsv = morph
 
     # combined mask
-    combined_mask = cv2.bitwise_or(mask, plywood_mask_bgr)
+    combined_mask = cv2.bitwise_or(mask, plywood_mask_hsv)
+    morph = cv2.dilate(combined_mask, kernel, iterations=2)
+    combined_mask = morph
 
     # Display the combined mask
     res = cv2.bitwise_and(frame,frame, mask= combined_mask)
-    cv2.imshow("Combined Mask", res)
+    cv2.imshow("Combined Mask", combined_mask)
     cv2.waitKey(1)
 
-    # Display the frame with detected shapes
-    #cv2.imshow("Shape Detection", frame)
+    res = combined_mask
+    # Detect edges using Canny edge detection
+    edges = cv2.Canny(res, 50, 150)
+    # Find contours in the edge-detected image
+    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # Draw contours on the original frame
+    for contour in contours:
+        area = cv2.contourArea(contour)
+        if area < 10000:
+            continue
+        # Approximate the contour to reduce the number of points
+        epsilon = 0.02 * cv2.arcLength(contour, True)
+        approx = cv2.approxPolyDP(contour, epsilon, True)
+        # Check the number of vertices in the approximated contour
+        vertices = len(approx)
+        if vertices == 4:
+            shape = "Square/Rectangle"
+        elif vertices > 4:
+            shape = "Circle"
+        else:
+            shape = "Other"
+        # Draw the contour and label the shape
+        cv2.drawContours(frame, [approx], -1, (0, 255, 0), 2)
+        x, y, w, h = cv2.boundingRect(approx)
+        cv2.putText(frame, shape, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+        # Draw the bounding rectangle
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        # Draw the minimum enclosing circle
+        cv2.drawContours(frame, contours, -1, (0, 255, 0), 2)
+        '''
+        (x,y),radius = cv2.minEnclosingCircle(contour)
+        center = (int(x),int(y))
+        radius = int(radius)
+        cv2.circle(frame,center,radius,(0,255,0),2)
+        ellipse = cv2.fitEllipse(contour)
+        cv2.ellipse(frame,ellipse,(0,255,0),2)
+        '''
+
+    #frame = res
+    cv2.imshow("Shape Detection", frame)
 
 
 def main(args=None):
-    #while True:
-    #    test()
+    while True:
+        test()
     
     rclpy.init(args=args)
     gate_detector = GateDetector()
