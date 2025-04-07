@@ -24,70 +24,108 @@ class GateDetector(Node):
     def listener_callback(self, data):
         self.get_logger().info('Receiving video frame')
         frame = self.br.imgmsg_to_cv2(data, 'bgr8')
+        
         #frame = cv2.imread("/home/sandra/Downloads/circle_gate.jpeg", cv2.IMREAD_COLOR)
         #cv2.imshow("Received frame", frame)
         cv2.waitKey(1)
-
-        # Preprocess the image with conversion to grayscale and gaussian blur to reduce noice in the image
+        # Convert the image to grayscale for shape detection
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        blur = cv2.GaussianBlur(gray, (15, 15), 0)
 
-        ### TEST CODE STARTS ###
-        #kernel_25 = np.ones((25,25), dtype=np.float32) / 625.0
+        # Apply GaussianBlur to reduce noise and improve edge detection
+        blur = cv2.GaussianBlur(gray,(15,15),0)
+        #th3 = cv2.medianBlur(gray,5)
+        #th3 = cv2.adaptiveThreshold(blur,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,11,2)
+        #ret3,th3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
-        #output_kernel = cv2.filter2D(gray, -1, kernel_25)
-        #blur = cv2.blur(gray, (25,25))
+        '''
+        # Rectangular Kernel
+        kernel_rq = cv2.getStructuringElement(cv2.MORPH_RECT,(5,5))
+        # Elliptical Kernel
+        kernel_el = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
+        sharpen = cv2.filter2D(blur, -1, kernel_rq)
+        '''
 
-        #cv2.imshow("Blurred frame", blur)
-        cv2.waitKey(1)
-        ### TEST CODE ENDS ##
+        # Detect edges using Canny edge detection
+        edges = cv2.Canny(blur, 50, 150)
 
-        # Detect edges, highlighting the significant transitions in pixel intensity (usually correspons to object boundaries)
-        # ADJUST THE THRESHOLDS TO CONTROL THE SENSITIVITY OF EDGE DETECTION
-        edges = cv2.Canny(blur, 30, 100)
+        # Find contours in the edge-detected image
+        contours, _ = cv2.findContours(blur, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        # Find countours in the edge-detected image (adjust the second argument for other contour retrieval modes)
-        contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-        
-        ### TEST CODE STARTS ###
-        output = frame.copy()
-        cv2.drawContours(output, contours, -1, (0,255,0), 3)
-        cv2.imshow("Contoured frame", output)
-        cv2.waitKey(1)
-        ### TEST CODE ENDS ###
+        frame = blur
 
         for contour in contours:
-            # Approximating contours: simplify the contour while preserving its core structure
-            # Number of vertices is reduced here:
-            # Increasing the epsilon value leads to better contour smoothness
-            epsilon = 0.04 * cv2.arcLength(contour, True)
+            # Approximate the contour to reduce the number of points
+            epsilon = 0.02 * cv2.arcLength(contour, True)
             approx = cv2.approxPolyDP(contour, epsilon, True)
-            #cv2.drawContours(frame.copy(), [approx], 0, (0,255,0), 2)
 
-            # Classification of shapes based on the number of vertices found in the approximated contours
+            # Check the number of vertices in the approximated contour
             vertices = len(approx)
-            print(vertices)
+
             if vertices == 4:
-                shape = "rectangle"
+                shape = "Square/Rectangle"
+            elif vertices > 4:
+                shape = "Circle"
             else:
-                shape = "circle"
+                shape = "Other"
 
-            output = frame.copy()
-            cv2.drawContours(output, [approx], 0, (0,255,0), 2)
-            #cv2.imshow("Approximated Contour", output)
-            cv2.waitKey(1)
-            
+            # Draw the contour and label the shape
+            cv2.drawContours(frame, [approx], -1, (0, 255, 0), 2)
+            x, y, w, h = cv2.boundingRect(approx)
+            cv2.putText(frame, shape, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
 
-        #cv2.destroyAllWindows()
+        # Display the frame with detected shapes
+        cv2.imshow("Shape Detection", frame)
 
+def test():
+
+    frame = cv2.imread("/home/tuisku/Pictures/portti.jpeg", cv2.IMREAD_COLOR)
+    frame = cv2.GaussianBlur(frame,(25,25),0)
+    #cv2.imshow("Received frame", frame)
+    cv2.waitKey(1)
+    # Convert the image to grayscale for shape detection
+    #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    # mask
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    lower_green = np.array([40, 40, 40])
+    upper_green = np.array([80, 255, 255])
+    mask = cv2.inRange(hsv, lower_green, upper_green)
+    #cv2.imshow("Green values", mask)
+
+    # Define the range for plywood in BGR
+    lower_plywood_bgr = np.array([200, 200, 200])
+    upper_plywood_bgr = np.array([250, 250, 250])
+    plywood_mask_bgr = cv2.inRange(frame, lower_plywood_bgr, upper_plywood_bgr)
+
+    # Display the mask for plywood
+    cv2.imshow("Plywood mask (BGR)", plywood_mask_bgr)
+    cv2.waitKey(1)
+
+    # Combine the whites from both masks
+    combined_mask = cv2.bitwise_or(mask, plywood_mask_bgr)
+
+    kernel = np.ones((5,5),np.uint8)
+    #pening = cv2.morphologyEx(combined_mask, cv2.MORPH_OPEN, kernel)
+    opening = cv2.dilate(combined_mask,kernel,iterations = 1)
+
+    # Display the combined mask
+    cv2.imshow("Combined Mask", opening)
+    cv2.waitKey(1)
+
+    # Display the frame with detected shapes
+    #cv2.imshow("Shape Detection", frame)
 
 
 def main(args=None):
+    while True:
+        test()
+    '''
     rclpy.init(args=args)
     gate_detector = GateDetector()
     rclpy.spin(gate_detector)
     gate_detector.destroy_node()
     rclpy.shutdown()
+    '''
 
 if __name__ == '__main__':
     main()
