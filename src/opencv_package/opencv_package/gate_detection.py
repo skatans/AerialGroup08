@@ -25,56 +25,15 @@ class GateDetector(Node):
         self.get_logger().info('Receiving video frame')
         frame = self.br.imgmsg_to_cv2(data, 'bgr8')
         
-        cv2.waitKey(1)
-        # Convert the image to grayscale for shape detection
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-        # Apply GaussianBlur to reduce noise and improve edge detection
-        frame = cv2.GaussianBlur(frame,(15,15),0)
-
-        '''FILTERING'''
-        # green mask
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        lower_green = np.array([40, 20, 20])
-        upper_green = np.array([80, 255, 255])
-        mask = cv2.inRange(hsv, lower_green, upper_green)
-
-        # plywood mask
-        lower_plywood_bgr = np.array([150, 150, 150])
-        upper_plywood_bgr = np.array([200, 200, 200])
-        plywood_mask_bgr = cv2.inRange(frame, lower_plywood_bgr, upper_plywood_bgr)
-
-        # combined mask
-        combined_mask = cv2.bitwise_or(mask, plywood_mask_bgr)
-
-        kernel = np.ones((5,5),np.uint8)
-        #dilated = cv2.dilate(combined_mask,kernel,iterations = 1)
-
-        # Detect edges using Canny edge detection
-        edges = cv2.Canny(combined_mask, 50, 150)
-
-        # Find contours in the edge-detected image
-        contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-        #frame = combined_mask
-        res = cv2.bitwise_and(frame,frame, mask= combined_mask)
-
-        for contour in contours:
-            # Approximate the contour to reduce the number of points
-            epsilon = 0.02 * cv2.arcLength(contour, True)
-            approx = cv2.approxPolyDP(contour, epsilon, True)
-
-            # Draw the contour and label the shape
-            cv2.drawContours(frame, [approx], -1, (0, 255, 0), 2)
-            x, y, w, h = cv2.boundingRect(approx)
-            #cv2.putText(frame, shape, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-
-        # Display the frame with detected shapes
-        cv2.imshow("Shape Detection", res)
+        detect_gate(frame)
 
 def test():
-
     frame = cv2.imread("/home/tuisku/Pictures/portti2.jpeg", cv2.IMREAD_COLOR)
+    detect_gate(frame)
+
+
+def detect_gate(image):
+    frame = image
     blur = cv2.GaussianBlur(frame,(15,15),0)
     #cv2.imshow("Received frame", frame)
     cv2.waitKey(1)
@@ -94,21 +53,44 @@ def test():
     morph = cv2.dilate(morph,kernel,iterations = 2)
 
     mask = morph
-
+    
     # plywood mask
-    lower_plywood_bgr = np.array([150, 150, 150])
-    upper_plywood_bgr = np.array([200, 200, 200])
-    plywood_mask_bgr = cv2.inRange(frame, lower_plywood_bgr, upper_plywood_bgr)
+    lower_plywood_bgr0 = np.array([90, 120, 150])
+    upper_plywood_bgr0 = np.array([140, 170, 210])
+    plywood_mask_bgr0 = cv2.inRange(blur, lower_plywood_bgr0, upper_plywood_bgr0)
+
+    lower_plywood_bgr1 = np.array([130, 160, 190])
+    upper_plywood_bgr1 = np.array([160, 190, 230])
+    plywood_mask_bgr1 = cv2.inRange(blur, lower_plywood_bgr1, upper_plywood_bgr1)
+
+    lower_plywood_bgr2 = np.array([150, 180, 210])
+    upper_plywood_bgr2 = np.array([190, 220, 240])
+    plywood_mask_bgr2 = cv2.inRange(blur, lower_plywood_bgr2, upper_plywood_bgr2)
+
+    lower_plywood_bgr3 = np.array([170, 200, 230])
+    upper_plywood_bgr3 = np.array([230, 240, 255])
+    plywood_mask_bgr3 = cv2.inRange(blur, lower_plywood_bgr3, upper_plywood_bgr3)
+
+    #lower_plywood_bgr4 = np.array([180, 200, 230])
+    #upper_plywood_bgr4 = np.array([220, 240, 255])
+    #plywood_mask_bgr4 = cv2.inRange(frame, lower_plywood_bgr4, upper_plywood_bgr4)
+
+    # Combine all plywood masks
+    plywood_mask_bgr = cv2.bitwise_or(plywood_mask_bgr1, plywood_mask_bgr2)
+    plywood_mask_bgr = cv2.bitwise_or(plywood_mask_bgr, plywood_mask_bgr0)
+    plywood_mask_bgr = cv2.bitwise_or(plywood_mask_bgr, plywood_mask_bgr3)
+
+    morph = plywood_mask_bgr
+    morph = cv2.erode(morph,kernel,iterations = 2)
+    morph = cv2.dilate(morph,kernel,iterations = 2)
+
+    plywood_mask_bgr = morph
 
     # combined mask
     combined_mask = cv2.bitwise_or(mask, plywood_mask_bgr)
 
-    kernel = np.ones((5,5),np.uint8)
-    #pening = cv2.morphologyEx(combined_mask, cv2.MORPH_OPEN, kernel)
-    opening = cv2.dilate(combined_mask,kernel,iterations = 1)
-
     # Display the combined mask
-    res = cv2.bitwise_and(frame,frame, mask= mask)
+    res = cv2.bitwise_and(frame,frame, mask= combined_mask)
     cv2.imshow("Combined Mask", res)
     cv2.waitKey(1)
 
@@ -117,8 +99,8 @@ def test():
 
 
 def main(args=None):
-    while True:
-        test()
+    #while True:
+    #    test()
     
     rclpy.init(args=args)
     gate_detector = GateDetector()
