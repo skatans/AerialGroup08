@@ -1,0 +1,26 @@
+[3.810s] Invoking command in '/home/sandra/common_project_ws/src/opencv_package': PYTHONPATH=/home/sandra/common_project_ws/install/opencv_package/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/opencv_package build --build-base /home/sandra/common_project_ws/build/opencv_package/build install --prefix /home/sandra/common_project_ws/install/opencv_package --record /home/sandra/common_project_ws/build/opencv_package/install.log --single-version-externally-managed
+[5.159s] running egg_info
+[5.162s] writing ../../build/opencv_package/opencv_package.egg-info/PKG-INFO
+[5.166s] writing dependency_links to ../../build/opencv_package/opencv_package.egg-info/dependency_links.txt
+[5.168s] writing entry points to ../../build/opencv_package/opencv_package.egg-info/entry_points.txt
+[5.169s] writing requirements to ../../build/opencv_package/opencv_package.egg-info/requires.txt
+[5.170s] writing top-level names to ../../build/opencv_package/opencv_package.egg-info/top_level.txt
+[5.340s] reading manifest file '../../build/opencv_package/opencv_package.egg-info/SOURCES.txt'
+[5.347s] writing manifest file '../../build/opencv_package/opencv_package.egg-info/SOURCES.txt'
+[5.349s] running build
+[5.350s] running build_py
+[5.351s] copying opencv_package/gate_detection.py -> /home/sandra/common_project_ws/build/opencv_package/build/lib/opencv_package
+[5.352s] running install
+[5.356s] running install_lib
+[5.364s] copying /home/sandra/common_project_ws/build/opencv_package/build/lib/opencv_package/gate_detection.py -> /home/sandra/common_project_ws/install/opencv_package/lib/python3.8/site-packages/opencv_package
+[5.365s] byte-compiling /home/sandra/common_project_ws/install/opencv_package/lib/python3.8/site-packages/opencv_package/gate_detection.py to gate_detection.cpython-38.pyc
+[5.373s] running install_data
+[5.377s] running install_egg_info
+[5.387s] removing '/home/sandra/common_project_ws/install/opencv_package/lib/python3.8/site-packages/opencv_package-0.0.0-py3.8.egg-info' (and everything under it)
+[5.391s] Copying ../../build/opencv_package/opencv_package.egg-info to /home/sandra/common_project_ws/install/opencv_package/lib/python3.8/site-packages/opencv_package-0.0.0-py3.8.egg-info
+[5.396s] running install_scripts
+[5.491s] Installing gate_det script to /home/sandra/common_project_ws/install/opencv_package/lib/opencv_package
+[5.492s] Installing img_det script to /home/sandra/common_project_ws/install/opencv_package/lib/opencv_package
+[5.492s] Installing img_sub script to /home/sandra/common_project_ws/install/opencv_package/lib/opencv_package
+[5.493s] writing list of installed files to '/home/sandra/common_project_ws/build/opencv_package/install.log'
+[5.600s] Invoked command in '/home/sandra/common_project_ws/src/opencv_package' returned '0': PYTHONPATH=/home/sandra/common_project_ws/install/opencv_package/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/opencv_package build --build-base /home/sandra/common_project_ws/build/opencv_package/build install --prefix /home/sandra/common_project_ws/install/opencv_package --record /home/sandra/common_project_ws/build/opencv_package/install.log --single-version-externally-managed

@@ -28,23 +28,31 @@ class GateDetector(Node):
         cv2.imshow("Received frame", frame)
         cv2.waitKey(1)
 
+        ### TEST CODE STARTS ###
+        frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        lower_y = np.array([35, 40, 40])
+        upper_y = np.array([80, 255, 255])
+
+        mask = cv2.inRange(frame_hsv, lower_y, upper_y)
+        cv2.imshow("Green values", mask)
+        cv2.waitKey(1)
+        ### TEST CODE ENDS ###
+
         # Preprocess the image with conversion to grayscale and gaussian blur to reduce noice in the image
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        blur = cv2.GaussianBlur(frame, (15, 15), 0)
+        gray_with_green_mask = cv2.bitwise_or(gray, mask)
 
-        ### TEST CODE STARTS ###
-        #kernel_25 = np.ones((25,25), dtype=np.float32) / 625.0
-
-        #output_kernel = cv2.filter2D(gray, -1, kernel_25)
-        #blur = cv2.blur(gray, (25,25))
-
-        cv2.imshow("Blurred frame", blur)
+        cv2.imshow("Gray without mask", gray)
         cv2.waitKey(1)
-        ### TEST CODE ENDS ##
+        cv2.imshow("Gray with mask", gray_with_green_mask)
+        cv2.waitKey(1)
+        blur = cv2.GaussianBlur(gray_with_green_mask, (15, 15), 0)
+        cv2.imshow("Blurred", blur)
+        cv2.waitKey(1)
 
         # Detect edges, highlighting the significant transitions in pixel intensity (usually correspons to object boundaries)
         # ADJUST THE THRESHOLDS TO CONTROL THE SENSITIVITY OF EDGE DETECTION
-        edges = cv2.Canny(blur, 30, 150)
+        edges = cv2.Canny(blur, 100, 255)
 
         # Find countours in the edge-detected image (adjust the second argument for other contour retrieval modes)
         contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -54,28 +62,43 @@ class GateDetector(Node):
         cv2.drawContours(output, contours, -1, (0,255,0), 3)
         cv2.imshow("Contoured frame", output)
         cv2.waitKey(1)
+        selected_contours = []
         ### TEST CODE ENDS ###
 
         for contour in contours:
+            ### TEST CODE STARTS ###
+            area = cv2.contourArea(contour)
+
+            if area > 1000:
+                selected_contours.append(contour)
+            ### TEST CODE ENDS ###
+            
             # Approximating contours: simplify the contour while preserving its core structure
             # Number of vertices is reduced here:
             # Increasing the epsilon value leads to better contour smoothness
-            epsilon = 0.04 * cv2.arcLength(contour, True)
+            epsilon = 0.01 * cv2.arcLength(contour, True)
             approx = cv2.approxPolyDP(contour, epsilon, True)
             #cv2.drawContours(frame.copy(), [approx], 0, (0,255,0), 2)
 
             # Classification of shapes based on the number of vertices found in the approximated contours
             vertices = len(approx)
-            print(vertices)
             if vertices == 4:
                 shape = "rectangle"
             else:
                 shape = "circle"
 
-            output = frame.copy()
-            cv2.drawContours(output, [approx], 0, (0,255,0), 2)
-            cv2.imshow("Approximated Contour", output)
-            cv2.waitKey(1)
+            #output = frame.copy()
+            #cv2.drawContours(output, [approx], 0, (0,255,0), 2)
+            #cv2.imshow("Approximated Contour", output)
+            #cv2.waitKey(1)
+
+        ### TEST CODE STARTS ###
+        output2 = frame.copy()
+        print(len(selected_contours))
+        cv2.drawContours(output2, selected_contours, -1, (255,0,0), 3)
+        cv2.imshow("Selected contour frame", output2)
+        cv2.waitKey(1)
+        ### TEST CODE ENDS###
             
 
         #cv2.destroyAllWindows()
