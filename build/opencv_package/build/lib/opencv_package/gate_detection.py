@@ -16,15 +16,15 @@ class GateDetector(Node):
         )
         self.subscription = self.create_subscription(
             Image,
-            '/drone1/image_raw',
+            '/image_raw',
             self.listener_callback,
             qos_profile=qos_profile)
         self.br = CvBridge()
     
     def listener_callback(self, data):
         self.get_logger().info('Receiving video frame')
-        #frame = self.br.imgmsg_to_cv2(data, 'bgr8')
-        frame = cv2.imread("/home/sandra/Downloads/circle_gate.jpeg", cv2.IMREAD_COLOR)
+        frame = self.br.imgmsg_to_cv2(data, 'bgr8')
+        #frame = cv2.imread("/home/sandra/Downloads/circle_gate.jpeg", cv2.IMREAD_COLOR)
         cv2.imshow("Received frame", frame)
         cv2.waitKey(1)
 
@@ -49,7 +49,7 @@ class GateDetector(Node):
         
         # Detect edges, highlighting the significant transitions in pixel intensity (usually correspons to object boundaries)
         # ADJUST THE THRESHOLDS TO CONTROL THE SENSITIVITY OF EDGE DETECTION
-        edges = cv2.Canny(blur, 100, 150)
+        edges = cv2.Canny(blur, 50, 150)
 
         kernel = np.ones((5,5),np.uint8)
         dilation = cv2.dilate(edges,kernel,iterations = 1)
@@ -63,7 +63,7 @@ class GateDetector(Node):
         cv2.imshow("Contoured frame", output)
         cv2.waitKey(1)
 
-        selected_contours = []
+        selected_contour = 0
         biggest_area = 0
         ### TEST CODE ENDS ###
 
@@ -71,10 +71,9 @@ class GateDetector(Node):
             ### TEST CODE STARTS ###
             area = cv2.contourArea(contour)
 
-            if area > 20000:
-                selected_contours.append(contour)
-                if area > biggest_area:
-                    biggest_area = area
+            if area > biggest_area:
+                biggest_area = area
+                selected_contour = contour
             ### TEST CODE ENDS ###
             
             # Approximating contours: simplify the contour while preserving its core structure
@@ -98,9 +97,8 @@ class GateDetector(Node):
 
         ### TEST CODE STARTS ###
         output2 = frame.copy()
-        print(len(selected_contours))
         print(biggest_area)
-        cv2.drawContours(output2, selected_contours, -1, (255,0,0), 3)
+        cv2.drawContours(output2, selected_contour, -1, (255,0,0), 3)
         cv2.imshow("Selected contour frame", output2)
         cv2.waitKey(1)
         ### TEST CODE ENDS###
