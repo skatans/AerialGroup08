@@ -7,9 +7,9 @@ from rclpy.qos import QoSProfile, QoSReliabilityPolicy
 import cv2
 import numpy as np
 
-plywood_light = [(10, 30), (0,40), (220,255)]
-plywood_mid = [(10, 30), (10,100), (200,255)]
-plywood_dark= [(10, 30), (50,130), (120,200)]
+plywood_light = [(10, 30), (0,40), (220,240)]
+plywood_mid = [(10, 30), (10,100), (200,240)]
+plywood_dark= [(5, 30), (20,100), (130,240)]
 
 class GateDetector(Node):
     def __init__(self):
@@ -32,7 +32,7 @@ class GateDetector(Node):
         detect_gate(frame)
 
 def test():
-    frame = cv2.imread("/home/tuisku/Pictures/portti2.jpeg", cv2.IMREAD_COLOR)
+    frame = cv2.imread("/home/tuisku/Pictures/portti6.jpg", cv2.IMREAD_COLOR)
     detect_gate(frame)
 
 
@@ -44,8 +44,8 @@ def detect_gate(image):
     '''FILTERING'''
     # green mask
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    lower_green = np.array([60, 100, 10])
-    upper_green = np.array([80, 255, 250])
+    lower_green = np.array([60, 80, 20])
+    upper_green = np.array([85, 255, 240])
     mask = cv2.inRange(hsv, lower_green, upper_green)
 
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
@@ -80,8 +80,19 @@ def detect_gate(image):
 
     plywood_mask_hsv = morph
 
+    # white mask
+    lower_white = np.array([120, 0, 150])
+    upper_white = np.array([160, 40, 200])
+    mask_white = cv2.inRange(hsv, lower_white, upper_white)
+    morph = mask_white
+    morph = cv2.erode(morph,kernel,iterations = 1)
+    morph = cv2.dilate(morph,kernel,iterations = 10)
+    morph = cv2.erode(morph,kernel,iterations = 5)
+    mask_white = morph
+
     # combined mask
     combined_mask = cv2.bitwise_or(mask, plywood_mask_hsv)
+    #combined_mask = cv2.bitwise_or(combined_mask, mask_white)
     morph = cv2.dilate(combined_mask, kernel, iterations=2)
     combined_mask = morph
 
@@ -101,17 +112,20 @@ def detect_gate(image):
     largest_radius = 0
     circle_midpoints = []
 
-
     # Draw contours on the original frame
     for contour in contours:
+        continue
         area = cv2.contourArea(contour)
-        if area < 10000:
-            continue
+        #if area < 3000:
+        #    continue
 
         # Fit a minimum enclosing circle around the contour
         (x, y), radius = cv2.minEnclosingCircle(contour)
         center = (int(x), int(y))
         radius = int(radius)
+
+        if radius < 50:
+            continue
 
         # Store the midpoint and dimensions of the circle
         circle_midpoints.append((center, radius))
@@ -121,16 +135,6 @@ def detect_gate(image):
             largest_radius = radius
             largest_circle = (center, radius)
 
-        # Draw the largest circle
-        if largest_circle:
-            center, radius = largest_circle
-            cv2.circle(frame, center, radius, (0, 255, 255), 2)
-            cv2.putText(frame, f"Radius: {radius}", (center[0] - 40, center[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
-
-        # Draw all circle midpoints
-        for center, radius in circle_midpoints:
-            cv2.circle(frame, center, 3, (255, 0, 0), -1)
-            cv2.putText(frame, f"({center[0]}, {center[1]})", (center[0] + 5, center[1] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 1)
 
         # Approximate the contour to reduce the number of points
         epsilon = 0.02 * cv2.arcLength(contour, True)
@@ -172,6 +176,17 @@ def detect_gate(image):
         ellipse = cv2.fitEllipse(contour)
         cv2.ellipse(frame,ellipse,(0,255,0),2)
         '''
+
+    # Draw the largest circle
+    if largest_circle:
+        center, radius = largest_circle
+        cv2.circle(frame, center, radius, (0, 255, 255), 2)
+        cv2.putText(frame, f"Radius: {radius}", (center[0] - 40, center[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
+
+    # Draw all circle midpoints
+    for center, radius in circle_midpoints:
+        cv2.circle(frame, center, 3, (255, 0, 0), -1)
+        cv2.putText(frame, f"({center[0]}, {center[1]})", (center[0] + 5, center[1] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 1)
 
     #frame = res
     cv2.imshow("Shape Detection", frame)
