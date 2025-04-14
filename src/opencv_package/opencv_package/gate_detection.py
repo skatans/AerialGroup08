@@ -6,10 +6,14 @@ from rclpy.qos import QoSProfile, QoSReliabilityPolicy
 
 import cv2
 import numpy as np
+from tello_msgs.srv import TelloAction
+
+flying = False
 
 plywood_light = [(10, 30), (0,40), (220,240)]
 plywood_mid = [(10, 30), (10,100), (200,240)]
 plywood_dark= [(5, 30), (20,100), (130,240)]
+
 
 class GateDetector(Node):
     def __init__(self):
@@ -40,6 +44,59 @@ def detect_gate(image):
     frame = image
     blur = cv2.GaussianBlur(frame,(15,15),0)
     cv2.waitKey(1)
+
+    # red mask
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    lower_red1 = np.array([0, 50, 50])
+    upper_red1 = np.array([10, 255, 255])
+    lower_red2 = np.array([170, 50, 50])
+    upper_red2 = np.array([180, 255, 255])
+
+    mask_red1 = cv2.inRange(hsv, lower_red1, upper_red1)
+    mask_red2 = cv2.inRange(hsv, lower_red2, upper_red2)
+    red_mask = cv2.bitwise_or(mask_red1, mask_red2)
+
+    # Apply the red mask to the image
+    red_result = cv2.bitwise_and(frame, frame, mask=red_mask)
+    cv2.imshow("Red Mask Applied", red_result)
+    cv2.waitKey(1)
+
+    red_edges = cv2.Canny(red_result, 50, 150)
+    # Find contours in the edge-detected image
+    red_contours, _ = cv2.findContours(red_edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # Check for a big red area in the contours
+    for contour in red_contours:
+        area = cv2.contourArea(contour)
+        cv2.putText(red_result, f"Area: {area}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        if area > 3000:  # Threshold for a "big" red area
+            print(area)
+            x, y, w, h = cv2.boundingRect(contour)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.putText(frame, "Big Red Area", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            # Call the ROS2 service to land the drone
+            client = rclpy.create_node('tello_action_client').create_client(TelloAction, 'tello_action')
+            
+            while not client.wait_for_service(timeout_sec=1.0):
+                print('Service not available, waiting...')
+
+            request = TelloAction.Request()
+            request.cmd = 'land'
+            #if area > 5000:
+            #    request.cmd = 'takeoff'
+            #else:
+            #    request.cmd = 'land'
+
+            future = client.call_async(request)
+            rclpy.spin_until_future_complete(rclpy.create_node('tello_action_client'), future)
+
+            if future.result() is not None:
+                print(f"Service call succeeded: {future.result()}")
+            else:
+                print(f"Service call failed: {future.exception()}")
+
+    cv2.imshow("Red Mask Applied", red_result)
+    cv2.waitKey(1)
+
 
     '''FILTERING'''
     # green mask
@@ -193,7 +250,7 @@ def detect_gate(image):
 
 
 def main(args=None):
-    while True:
+    while False:
         test()
     
     rclpy.init(args=args)
