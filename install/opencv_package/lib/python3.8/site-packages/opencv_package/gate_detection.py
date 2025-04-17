@@ -38,12 +38,12 @@ class GateDetector(Node):
 
         # Preprocess the image with conversion to grayscale and gaussian blur to reduce noice in the image
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        gray_with_green_mask = cv2.bitwise_or(gray, mask)
+        gray_with_combined_mask = cv2.bitwise_or(gray, mask)
 
-        cv2.imshow("Gray with mask", gray_with_green_mask)
+        cv2.imshow("Gray with mask", gray_with_combined_mask)
         cv2.waitKey(1)
 
-        blur = cv2.GaussianBlur(gray_with_green_mask, (15, 15), 0)
+        blur = cv2.GaussianBlur(gray_with_combined_mask, (15, 15), 0)
         cv2.imshow("Blurred", blur)
         cv2.waitKey(1)
         

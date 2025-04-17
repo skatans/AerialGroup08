@@ -9,6 +9,7 @@ setup.py
 ../../build/opencv_package/opencv_package.egg-info/top_level.txt
 ../../build/opencv_package/opencv_package.egg-info/zip-safe
 opencv_package/__init__.py
+opencv_package/command_subscriber.py
 opencv_package/gate_detection.py
 opencv_package/image_subscriber.py
 opencv_package/object_detection.py
