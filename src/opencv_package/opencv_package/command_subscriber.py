@@ -38,6 +38,11 @@ class CommandSubscriber(Node):
             self.get_logger().info('Going forward')
             pub_msg.linear.x = 0.3
             self.publisher.publish(pub_msg)
+        elif (msg.data == "forwardlong"):
+            self.get_logger().info('Going forward long')
+            pub_msg.linear.x = 0.3
+            self.publisher.publish(pub_msg)
+            time.sleep(0.5)
         elif (msg.data == "back"):
             self.get_logger().info('Going back')
             pub_msg.linear.x = -0.3
