@@ -29,6 +29,13 @@ class GateDetector(Node):
             qos_profile=qos_profile)
         self.br = CvBridge()
 
+    def service_response_callback(self, future):
+        try:
+            response = future.result()
+            print(f"Service call succeeded: {response}")
+        except Exception as e:
+            print(f"Service call failed: {e}")
+
     def listener_callback(self, data):
         self.get_logger().info('Receiving video frame')
         frame = self.br.imgmsg_to_cv2(data, 'bgr8')
@@ -47,12 +54,8 @@ class GateDetector(Node):
             print(request.cmd)
 
             future = self.client.call_async(request)
-            rclpy.spin_until_future_complete(self, future)
 
-            if future.result() is not None:
-                print(f"Service call succeeded: {future.result()}")
-            else:
-                print(f"Service call failed: {future.exception()}")
+            future.add_done_callback(self.service_response_callback)
 
         detect_gate(frame)
 
@@ -95,14 +98,6 @@ def detect_stop(image):
             cv2.putText(frame, "Big Red Area", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
             return area
-
-            future = self.client.call_async(request)
-            rclpy.spin_until_future_complete(rclpy.create_node('tello_action_client'), future)
-
-            if future.result() is not None:
-                print(f"Service call succeeded: {future.result()}")
-            else:
-                print(f"Service call failed: {future.exception()}")
     return 0
 
 
