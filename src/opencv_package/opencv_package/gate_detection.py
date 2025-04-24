@@ -28,6 +28,7 @@ class GateDetector(Node):
             self.listener_callback,
             qos_profile=qos_profile)
         self.br = CvBridge()
+        self.flying = False
 
     def service_response_callback(self, future):
         try:
@@ -40,25 +41,24 @@ class GateDetector(Node):
         #self.get_logger().info('Receiving video frame')
         frame = self.br.imgmsg_to_cv2(data, 'bgr8')
 
-        area = detect_stop(frame)
-        #print(area)
-        if area > 0:
+        if detect_takeoff_signal(frame):
+            while not self.client.wait_for_service(timeout_sec=1.0):
+                print('Service not available, waiting...')
+            request = TelloAction.Request()
+            self.get_logger().info('Takeoff command')
+            request.cmd = 'takeoff'
+            future = self.client.call_async(request)
+            future.add_done_callback(self.service_response_callback)
+
+        if detect_stop_signal(frame):
             while not self.client.wait_for_service(timeout_sec=1.0):
                 print('Service not available, waiting...')
 
             request = TelloAction.Request()
-            if area == 1:
-                self.get_logger().info('Takeoff command')
-                request.cmd = 'takeoff'
-            elif area > 5000:
-                self.get_logger().info('Land command')
-                request.cmd = 'land'
-            else:
-                self.get_logger().info('Land command')
-                request.cmd = 'land'
+            self.get_logger().info('Land command')
+            request.cmd = 'land'
 
             future = self.client.call_async(request)
-
             future.add_done_callback(self.service_response_callback)
 
         detect_gate(frame)
@@ -67,7 +67,7 @@ def test():
     frame = cv2.imread("/home/tuisku/Pictures/portti6.jpg", cv2.IMREAD_COLOR)
     detect_gate(frame)
 
-def detect_stop(image):
+def detect_takeoff_signal(image):
     frame = image
     blur = cv2.GaussianBlur(frame,(15,15),0)
     cv2.waitKey(1)
@@ -88,6 +88,12 @@ def detect_stop(image):
 
     if white_ratio > 0.75:
         return 1
+    return 0
+
+def detect_stop_signal(image):
+    frame = image
+    blur = cv2.GaussianBlur(frame,(15,15),0)
+    cv2.waitKey(1)
 
     # red mask
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -118,7 +124,7 @@ def detect_stop(image):
 
             cv2.imshow("Red Mask Applied", red_result)
             cv2.waitKey(1)
-            return area
+            return 1
     return 0
 
 
@@ -140,11 +146,20 @@ def detect_gate(image):
     morph = cv2.dilate(morph,kernel,iterations = 3)
 
     mask = morph
+
+    # Calculate the center of mass of the green areas
+    moments = cv2.moments(mask)
+    if moments["m00"] != 0:
+        cX = int(moments["m10"] / moments["m00"])
+        cY = int(moments["m01"] / moments["m00"])
+        cv2.circle(frame, (cX, cY), 5, (255, 0, 0), -1)
+        cv2.putText(frame, f"Center: ({cX}, {cY})", (cX + 10, cY - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+    else:
+        cX, cY = None, None
     
     # Check the lightness of the image
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     lightness = np.mean(hsv[:, :, 2])  # V channel represents lightness
-    #print("Lightness:", lightness)
 
     # Choose the plywood array based on lightness
     if lightness > 180:
@@ -246,7 +261,6 @@ def detect_gate(image):
             continue
         elif aspect_ratio < 0.9:
             cv2.putText(frame, "danger", (x, y + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-
         
         # Draw the contour and label the shape
         cv2.drawContours(frame, [approx], -1, (0, 255, 0), 2)
@@ -274,8 +288,8 @@ def detect_gate(image):
         cv2.circle(frame, center, 3, (255, 0, 0), -1)
         cv2.putText(frame, f"({center[0]}, {center[1]})", (center[0] + 5, center[1] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 1)
 
-    #frame = res
-    #cv2.imshow("Shape Detection", frame)
+    frame = res
+    cv2.imshow("Shape Detection", frame)
 
 
 def main(args=None):
