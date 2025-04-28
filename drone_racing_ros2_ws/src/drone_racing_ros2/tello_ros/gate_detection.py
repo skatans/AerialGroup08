@@ -57,6 +57,7 @@ class GateDetector(Node):
             print(f"Service call failed: {e}")
 
     def listener_callback(self, data):
+        global num_of_gates
         self.get_logger().info('Receiving video frame')
         if self.processing_image:
             return
@@ -75,10 +76,8 @@ class GateDetector(Node):
             if area == 1:
                 self.get_logger().info('Takeoff command')
                 request.cmd = 'takeoff'
-            elif area > 2000:
-                self.get_logger().info('Land command')
-                request.cmd = 'land'
-            else:
+            elif area > 2000 and num_of_gates>3:
+                print("######################landing###########################")
                 self.get_logger().info('Land command')
                 request.cmd = 'land'
 
@@ -211,7 +210,7 @@ class GateDetector(Node):
                         msg.data = "forwardlong"
                         self.publication.publish(msg)
                         time.sleep(2.5) # stabilization time
-                        num_of_gates = num_of_gates + 1
+                        #num_of_gates = num_of_gates + 1
                         print(f"GATES PASSED {num_of_gates}")
                     # Otherwise take only a small step
                     else:
