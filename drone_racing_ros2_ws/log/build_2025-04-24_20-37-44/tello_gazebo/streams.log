@@ -1,0 +1,206 @@
+[0.011s] Invoking command in '/home/huo/drone_racing_ros2_ws/build/tello_gazebo': AMENT_PREFIX_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs:/opt/ros/galactic LD_LIBRARY_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake /home/huo/drone_racing_ros2_ws/src/drone_racing_ros2/tello_ros/tello_gazebo -DCMAKE_INSTALL_PREFIX=/home/huo/drone_racing_ros2_ws/install/tello_gazebo
+[0.052s] -- The C compiler identification is GNU 9.4.0
+[0.093s] -- The CXX compiler identification is GNU 9.4.0
+[0.097s] -- Check for working C compiler: /usr/bin/cc
+[0.150s] -- Check for working C compiler: /usr/bin/cc -- works
+[0.151s] -- Detecting C compiler ABI info
+[0.205s] -- Detecting C compiler ABI info - done
+[0.214s] -- Detecting C compile features
+[0.214s] -- Detecting C compile features - done
+[0.216s] -- Check for working CXX compiler: /usr/bin/c++
+[0.278s] -- Check for working CXX compiler: /usr/bin/c++ -- works
+[0.279s] -- Detecting CXX compiler ABI info
+[0.346s] -- Detecting CXX compiler ABI info - done
+[0.363s] -- Detecting CXX compile features
+[0.363s] -- Detecting CXX compile features - done
+[0.366s] -- Found ament_cmake: 1.1.6 (/opt/ros/galactic/share/ament_cmake/cmake)
+[0.387s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3") 
+[0.388s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.452s] -- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.1") 
+[0.456s] -- Checking for module 'bullet>=2.82'
+[0.468s] --   Found bullet, version 2.88
+[0.559s] -- Found ccd: /usr/include (found suitable version "2.0", minimum required is "2.0") 
+[0.603s] -- Found fcl: /usr/include (found suitable version "0.5.0", minimum required is "0.3.2") 
+[0.647s] -- Found assimp: /usr/include (found version "5.0.0") 
+[0.664s] -- Found DART: /usr/include (Required is at least version "6.6") found components: dart 
+[0.902s] -- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.71.0/BoostConfig.cmake (found suitable version "1.71.0", minimum required is "1.40.0") found components: thread system filesystem program_options regex iostreams date_time 
+[0.920s] -- Found Protobuf: /usr/lib/x86_64-linux-gnu/libprotobuf.so;-lpthread (found version "3.6.1") 
+[0.923s] -- Looking for ignition-math6 -- found version 6.15.1
+[0.929s] -- Searching for dependencies of ignition-math6
+[0.930s] -- Looking for OGRE...
+[0.931s] -- OGRE_PREFIX_WATCH changed.
+[0.935s] -- Checking for module 'OGRE'
+[0.949s] --   Found OGRE, version 1.9.0
+[0.980s] -- Found Ogre Ghadamon (1.9.0)
+[0.985s] -- Found OGRE: optimized;/usr/lib/x86_64-linux-gnu/libOgreMain.so;debug;/usr/lib/x86_64-linux-gnu/libOgreMain.so
+[0.994s] -- Looking for OGRE_Paging...
+[0.999s] -- Found OGRE_Paging: optimized;/usr/lib/x86_64-linux-gnu/libOgrePaging.so;debug;/usr/lib/x86_64-linux-gnu/libOgrePaging.so
+[0.999s] -- Looking for OGRE_Terrain...
+[1.004s] -- Found OGRE_Terrain: optimized;/usr/lib/x86_64-linux-gnu/libOgreTerrain.so;debug;/usr/lib/x86_64-linux-gnu/libOgreTerrain.so
+[1.004s] -- Looking for OGRE_Property...
+[1.008s] -- Found OGRE_Property: optimized;/usr/lib/x86_64-linux-gnu/libOgreProperty.so;debug;/usr/lib/x86_64-linux-gnu/libOgreProperty.so
+[1.008s] -- Looking for OGRE_RTShaderSystem...
+[1.013s] -- Found OGRE_RTShaderSystem: optimized;/usr/lib/x86_64-linux-gnu/libOgreRTShaderSystem.so;debug;/usr/lib/x86_64-linux-gnu/libOgreRTShaderSystem.so
+[1.013s] -- Looking for OGRE_Volume...
+[1.017s] -- Found OGRE_Volume: optimized;/usr/lib/x86_64-linux-gnu/libOgreVolume.so;debug;/usr/lib/x86_64-linux-gnu/libOgreVolume.so
+[1.017s] -- Looking for OGRE_Overlay...
+[1.021s] -- Found OGRE_Overlay: optimized;/usr/lib/x86_64-linux-gnu/libOgreOverlay.so;debug;/usr/lib/x86_64-linux-gnu/libOgreOverlay.so
+[1.111s] -- Looking for ignition-math6 -- found version 6.15.1
+[1.112s] -- Looking for ignition-transport8 -- found version 8.5.1
+[1.113s] -- Searching for dependencies of ignition-transport8
+[1.136s] -- Config-file not installed for ZeroMQ -- checking for pkg-config
+[1.140s] -- Checking for module 'libzmq >= 4'
+[1.152s] --   Found libzmq , version 4.3.2
+[1.182s] -- Found ZeroMQ: TRUE (Required is at least version "4") 
+[1.187s] -- Checking for module 'uuid'
+[1.200s] --   Found uuid, version 2.34.0
+[1.230s] -- Found UUID: TRUE  
+[1.232s] -- Looking for ignition-msgs5 -- found version 5.11.1
+[1.232s] -- Searching for dependencies of ignition-msgs5
+[1.248s] -- Looking for ignition-math6 -- found version 6.15.1
+[1.252s] -- Checking for module 'tinyxml2'
+[1.263s] --   Found tinyxml2, version 6.2.0
+[1.294s] -- Looking for ignition-msgs5 -- found version 5.11.1
+[1.295s] -- Looking for ignition-common3 -- found version 3.17.1
+[1.295s] -- Searching for dependencies of ignition-common3
+[1.296s] -- Looking for dlfcn.h - found
+[1.296s] -- Looking for libdl - found
+[1.297s] -- Found DL: TRUE  
+[1.304s] -- Searching for <ignition-common3> component [graphics]
+[1.306s] -- Looking for ignition-common3-graphics -- found version 3.17.1
+[1.306s] -- Searching for dependencies of ignition-common3-graphics
+[1.306s] -- Looking for ignition-math6 -- found version 6.15.1
+[1.308s] -- Looking for ignition-fuel_tools4 -- found version 4.9.2
+[1.308s] -- Searching for dependencies of ignition-fuel_tools4
+[1.366s] -- Found CURL: /usr/lib/x86_64-linux-gnu/libcurl.so (found version "7.68.0")  
+[1.372s] -- Checking for module 'jsoncpp'
+[1.383s] --   Found jsoncpp, version 1.7.4
+[1.415s] -- Found JSONCPP: TRUE  
+[1.420s] -- Checking for module 'libzip'
+[1.435s] --   Found libzip, version 1.5.1
+[1.466s] -- Found ZIP: TRUE  
+[1.466s] -- Looking for ignition-common3 -- found version 3.17.1
+[1.467s] -- Looking for ignition-math6 -- found version 6.15.1
+[1.467s] -- Looking for ignition-msgs5 -- found version 5.11.1
+[1.469s] -- Found gazebo_dev: 3.5.2 (/opt/ros/galactic/share/gazebo_dev/cmake)
+[1.469s] -- Gazebo version: 11.15
+[1.470s] -- Found gazebo_ros: 3.5.2 (/opt/ros/galactic/share/gazebo_ros/cmake)
+[1.505s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.510s] -- Found rosidl_adapter: 2.2.3 (/opt/ros/galactic/share/rosidl_adapter/cmake)
+[1.584s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "1.1.1f")  
+[1.612s] -- Found FastRTPS: /opt/ros/galactic/include  
+[1.706s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.897s] -- Found rmw_implementation_cmake: 3.3.1 (/opt/ros/galactic/share/rmw_implementation_cmake/cmake)
+[1.900s] -- Found rmw_cyclonedds_cpp: 0.22.6 (/opt/ros/galactic/share/rmw_cyclonedds_cpp/cmake)
+[1.963s] -- Using RMW implementation 'rmw_cyclonedds_cpp' as default
+[1.965s] -- Found Threads: TRUE  
+[2.420s] -- Found geometry_msgs: 2.2.4 (/opt/ros/galactic/share/geometry_msgs/cmake)
+[2.477s] -- Found sensor_msgs: 2.2.4 (/opt/ros/galactic/share/sensor_msgs/cmake)
+[2.613s] -- Found tello_msgs: 0.1.0 (/home/huo/drone_racing_ros2_ws/install/tello_msgs/share/tello_msgs/cmake)
+[2.891s] -- Configuring done
+[2.961s] -- Generating done
+[3.000s] -- Build files have been written to: /home/huo/drone_racing_ros2_ws/build/tello_gazebo
+[3.034s] Invoked command in '/home/huo/drone_racing_ros2_ws/build/tello_gazebo' returned '0': AMENT_PREFIX_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs:/opt/ros/galactic LD_LIBRARY_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake /home/huo/drone_racing_ros2_ws/src/drone_racing_ros2/tello_ros/tello_gazebo -DCMAKE_INSTALL_PREFIX=/home/huo/drone_racing_ros2_ws/install/tello_gazebo
+[3.035s] Invoking command in '/home/huo/drone_racing_ros2_ws/build/tello_gazebo': AMENT_PREFIX_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs:/opt/ros/galactic LD_LIBRARY_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/huo/drone_racing_ros2_ws/build/tello_gazebo -- -j8 -l8
+[3.188s] [35m[1mScanning dependencies of target TelloPlugin[0m
+[3.459s] [ 50%] [32mBuilding CXX object CMakeFiles/TelloPlugin.dir/src/tello_plugin.cpp.o[0m
+[23.973s] [100%] [32m[1mLinking CXX shared library libTelloPlugin.so[0m
+[24.655s] [100%] Built target TelloPlugin
+[24.664s] Invoked command in '/home/huo/drone_racing_ros2_ws/build/tello_gazebo' returned '0': AMENT_PREFIX_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs:/opt/ros/galactic LD_LIBRARY_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/huo/drone_racing_ros2_ws/build/tello_gazebo -- -j8 -l8
+[24.666s] Invoking command in '/home/huo/drone_racing_ros2_ws/build/tello_gazebo': AMENT_PREFIX_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs:/opt/ros/galactic LD_LIBRARY_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/huo/drone_racing_ros2_ws/build/tello_gazebo
+[24.673s] -- Install configuration: ""
+[24.673s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/lib/libTelloPlugin.so
+[24.678s] -- Set runtime path of "/home/huo/drone_racing_ros2_ws/install/tello_gazebo/lib/libTelloPlugin.so" to ""
+[24.678s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models
+[24.678s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_blue
+[24.679s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_blue/model.sdf
+[24.679s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_blue/square_gate.dae
+[24.679s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_blue/model.config
+[24.679s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_green
+[24.679s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_green/model.sdf
+[24.680s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_green/square_gate.dae
+[24.680s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_green/model.config
+[24.680s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_red
+[24.680s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_red/model.sdf
+[24.680s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_red/square_gate.dae
+[24.680s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_red/model.config
+[24.680s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_green_short
+[24.681s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_green_short/model.sdf
+[24.681s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_green_short/square_gate_short.dae
+[24.681s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_green_short/model.config
+[24.681s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_green_short
+[24.681s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_green_short/model.sdf
+[24.681s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_green_short/model.config
+[24.682s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_green_short/circle_gate_short.dae
+[24.683s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_blue
+[24.683s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_blue/model.sdf
+[24.683s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_blue/circle_gate.dae
+[24.684s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_blue/model.config
+[24.684s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/stop_sign
+[24.684s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/stop_sign/model.sdf
+[24.685s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/stop_sign/model-1_4.sdf
+[24.685s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/stop_sign/model-1_3.sdf
+[24.685s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/stop_sign/meshes
+[24.685s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/stop_sign/meshes/stop_sign.dae
+[24.686s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/stop_sign/model.config
+[24.686s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/stop_sign/materials
+[24.686s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/stop_sign/materials/textures
+[24.686s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/stop_sign/materials/textures/StopSign_Spec.png
+[24.687s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/stop_sign/materials/textures/StopSign_Diffuse.png
+[24.688s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/stop_sign/materials/scripts
+[24.688s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/stop_sign/materials/scripts/stopsign.material
+[24.689s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_red
+[24.689s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_red/model.sdf
+[24.689s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_red/circle_gate.dae
+[24.689s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_red/model.config
+[24.690s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_green_tall
+[24.690s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_green_tall/model.sdf
+[24.690s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_green_tall/square_gate_tall.dae
+[24.690s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/square_gate_green_tall/model.config
+[24.690s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/euro_pallet
+[24.690s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/euro_pallet/model.sdf
+[24.691s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/euro_pallet/meshes
+[24.691s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/euro_pallet/meshes/pallet.dae
+[24.692s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/euro_pallet/model.config
+[24.692s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_green
+[24.692s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_green/model.sdf
+[24.692s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_green/circle_gate.dae
+[24.693s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_green/model.config
+[24.693s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/asphalt_plane
+[24.693s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/asphalt_plane/model.sdf
+[24.693s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/asphalt_plane/model-1_4.sdf
+[24.693s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/asphalt_plane/model.config
+[24.694s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/asphalt_plane/materials
+[24.694s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/asphalt_plane/materials/textures
+[24.694s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/asphalt_plane/materials/textures/tarmac.png
+[24.699s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/asphalt_plane/materials/scripts
+[24.699s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/asphalt_plane/materials/scripts/asphalt.material
+[24.699s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_green_tall
+[24.700s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_green_tall/circle_gate_tall.dae
+[24.700s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_green_tall/model.sdf
+[24.700s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/models/circle_gate_green_tall/model.config
+[24.700s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/worlds
+[24.701s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/worlds/demo_track.world
+[24.701s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/worlds/simple.world
+[24.701s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/launch
+[24.701s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/launch/demo_track_launch.py
+[24.702s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/launch/__pycache__
+[24.702s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/launch/__pycache__/vlam_launch.cpython-38.pyc
+[24.702s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/launch/simple_launch.py
+[24.702s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/lib/tello_gazebo/inject_entity.py
+[24.703s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/ament_index/resource_index/package_run_dependencies/tello_gazebo
+[24.703s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/ament_index/resource_index/parent_prefix_path/tello_gazebo
+[24.703s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/environment/ament_prefix_path.sh
+[24.703s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/environment/ament_prefix_path.dsv
+[24.703s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/environment/path.sh
+[24.703s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/environment/path.dsv
+[24.704s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/local_setup.bash
+[24.704s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/local_setup.sh
+[24.704s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/local_setup.zsh
+[24.704s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/local_setup.dsv
+[24.704s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/package.dsv
+[24.704s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/ament_index/resource_index/packages/tello_gazebo
+[24.704s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/cmake/tello_gazeboConfig.cmake
+[24.704s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/cmake/tello_gazeboConfig-version.cmake
+[24.704s] -- Installing: /home/huo/drone_racing_ros2_ws/install/tello_gazebo/share/tello_gazebo/package.xml
+[24.707s] Invoked command in '/home/huo/drone_racing_ros2_ws/build/tello_gazebo' returned '0': AMENT_PREFIX_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs:/opt/ros/galactic LD_LIBRARY_PATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/huo/drone_racing_ros2_ws/install/tello_msgs/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/huo/drone_racing_ros2_ws/build/tello_gazebo

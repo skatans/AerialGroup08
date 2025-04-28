@@ -1,0 +1,4 @@
+Invoking command in '/home/huo/drone_racing_ros2_ws/build/tello_msgs': CMAKE_PREFIX_PATH=/opt/ros/galactic /usr/bin/cmake --build /home/huo/drone_racing_ros2_ws/build/tello_msgs -- -j8 -l8
+Invoked command in '/home/huo/drone_racing_ros2_ws/build/tello_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/galactic /usr/bin/cmake --build /home/huo/drone_racing_ros2_ws/build/tello_msgs -- -j8 -l8
+Invoking command in '/home/huo/drone_racing_ros2_ws/build/tello_msgs': CMAKE_PREFIX_PATH=/opt/ros/galactic /usr/bin/cmake --install /home/huo/drone_racing_ros2_ws/build/tello_msgs
+Invoked command in '/home/huo/drone_racing_ros2_ws/build/tello_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/galactic /usr/bin/cmake --install /home/huo/drone_racing_ros2_ws/build/tello_msgs

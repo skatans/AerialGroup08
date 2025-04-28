@@ -1,0 +1,213 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15
+					]
+				},
+				{
+					"build" : "tello_msgs__py",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "/home/huo/drone_racing_ros2_ws/build/tello_msgs/tello_msgs__py",
+					"targetIndexes" : 
+					[
+						2
+					]
+				}
+			],
+			"name" : "",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1
+					],
+					"name" : "tello_msgs",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "tello_msgs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tello_msgs-7c562cc0c60289d7346c.json",
+					"name" : "tello_msgs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tello_msgs__cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tello_msgs__cpp-4ed32f8ad98440dfddb1.json",
+					"name" : "tello_msgs__cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "tello_msgs__py::@c83f7928a2805595bb61",
+					"jsonFile" : "target-tello_msgs__py-c8cf6d92e0b43c8dd3c9.json",
+					"name" : "tello_msgs__py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tello_msgs__python::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tello_msgs__python-c663dc8015ac5af6ab38.json",
+					"name" : "tello_msgs__python",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tello_msgs__rosidl_generator_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tello_msgs__rosidl_generator_c-7bd349f4d7781079eb9d.json",
+					"name" : "tello_msgs__rosidl_generator_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tello_msgs__rosidl_typesupport_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tello_msgs__rosidl_typesupport_c-f2b1b82916041d2ba4da.json",
+					"name" : "tello_msgs__rosidl_typesupport_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tello_msgs__rosidl_typesupport_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tello_msgs__rosidl_typesupport_c__pyext-adfcbc8b9c3a38a4bffc.json",
+					"name" : "tello_msgs__rosidl_typesupport_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tello_msgs__rosidl_typesupport_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tello_msgs__rosidl_typesupport_cpp-8163e2dda82abfa4b368.json",
+					"name" : "tello_msgs__rosidl_typesupport_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tello_msgs__rosidl_typesupport_fastrtps_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tello_msgs__rosidl_typesupport_fastrtps_c-4d29108c2d8d35b18d21.json",
+					"name" : "tello_msgs__rosidl_typesupport_fastrtps_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tello_msgs__rosidl_typesupport_fastrtps_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tello_msgs__rosidl_typesupport_fastrtps_c__pyext-41498ec3563eceb462f5.json",
+					"name" : "tello_msgs__rosidl_typesupport_fastrtps_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tello_msgs__rosidl_typesupport_fastrtps_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tello_msgs__rosidl_typesupport_fastrtps_cpp-cfaddb82f490021426e8.json",
+					"name" : "tello_msgs__rosidl_typesupport_fastrtps_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tello_msgs__rosidl_typesupport_introspection_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tello_msgs__rosidl_typesupport_introspection_c-fabe0b6b3b34137da8db.json",
+					"name" : "tello_msgs__rosidl_typesupport_introspection_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tello_msgs__rosidl_typesupport_introspection_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tello_msgs__rosidl_typesupport_introspection_c__pyext-865fa8cf1834b8e41ce3.json",
+					"name" : "tello_msgs__rosidl_typesupport_introspection_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tello_msgs__rosidl_typesupport_introspection_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tello_msgs__rosidl_typesupport_introspection_cpp-8de7c4d7e87dc4fdbc31.json",
+					"name" : "tello_msgs__rosidl_typesupport_introspection_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tello_msgs_uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tello_msgs_uninstall-2fd5972c52a1156406e3.json",
+					"name" : "tello_msgs_uninstall",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-uninstall-d27c6fbc0747e319256b.json",
+					"name" : "uninstall",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/huo/drone_racing_ros2_ws/build/tello_msgs",
+		"source" : "/home/huo/drone_racing_ros2_ws/src/drone_racing_ros2/tello_ros/tello_msgs"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 0
+	}
+}
