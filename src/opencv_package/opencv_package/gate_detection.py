@@ -67,7 +67,7 @@ class GateDetector(Node):
                 self.flying = False
             future = self.client.call_async(request)
             future.add_done_callback(self.service_response_callback)
-        if self.num_of_gates:
+        if self.num_of_gates == 4:
             self.find_stop_signal(frame)
         if self.num_of_gates == 4 and self.detect_stop_signal(frame):
             while not self.client.wait_for_service(timeout_sec=1.0):
@@ -186,10 +186,10 @@ class GateDetector(Node):
             # Check horizontal and vertical misalignment, the functions handle the movement if necessary
             if abs(error_height) > height_threshold:
                 aligned = False
-                check_up_down(error_height, height_threshold)
+                self.check_up_down(error_height, height_threshold)
             if abs(error_width) > width_threshold:
                 aligned = False
-                check_right_left(error_width, width_threshold)
+                self.check_right_left(error_width, width_threshold)
 
             # If the red area is aligned, move forward
             if aligned:
