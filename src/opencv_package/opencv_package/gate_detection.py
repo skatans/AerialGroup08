@@ -170,6 +170,7 @@ class GateDetector(Node):
         red_result = cv2.bitwise_and(frame, frame, mask=red_mask)
 
         red_edges = cv2.Canny(red_result, 50, 150)
+
         # Find contours in the edge-detected image
         red_contours, _ = cv2.findContours(red_edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         # Check for a big red area in the contours
@@ -224,8 +225,8 @@ class GateDetector(Node):
             if moments["m00"] != 0:
                 center_x = int(moments["m10"] / moments["m00"])
                 center_y = int(moments["m01"] / moments["m00"])
-                cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
-                cv2.putText(frame, f"Center: ({center_x}, {center_y})", (center_x + 10, center_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                #cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
+                #cv2.putText(frame, f"Center: ({center_x}, {center_y})", (center_x + 10, center_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
             else:
                 center_x, center_y = None, None
 
