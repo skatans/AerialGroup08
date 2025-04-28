@@ -139,6 +139,7 @@ class GateDetector(Node):
         image_width = frame.shape[1]
         blur = cv2.GaussianBlur(frame,(15,15),0)
         cv2.waitKey(1)
+        gate_detected = False
 
         '''FILTERING'''
         # green mask
@@ -152,56 +153,9 @@ class GateDetector(Node):
         morph = cv2.erode(morph,kernel,iterations = 2)
         morph = cv2.dilate(morph,kernel,iterations = 3)
 
-        mask = morph
         green_mask = morph
-    
-        # Check the lightness of the image
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        lightness = np.mean(hsv[:, :, 2])  # V channel represents lightness
-        #print("Lightness:", lightness)
+        res = green_mask
 
-        # Choose the plywood array based on lightness
-        if lightness > 180:
-            plywood = plywood_light
-        elif lightness > 120:
-            plywood = plywood_mid
-        else:
-            plywood = plywood_dark
-
-        # plywood mask using HSV
-        hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
-        lower_plywood_hsv = np.array([plywood[0][0], plywood[1][0], plywood[2][0]])
-        upper_plywood_hsv = np.array([plywood[0][1], plywood[1][1], plywood[2][1]])
-        plywood_mask_hsv = cv2.inRange(hsv, lower_plywood_hsv, upper_plywood_hsv)
-
-        morph = plywood_mask_hsv
-        morph = cv2.erode(morph, kernel, iterations=1)
-        morph = cv2.dilate(morph, kernel, iterations=3)
-
-        plywood_mask_hsv = morph
-
-        # white mask
-        lower_white = np.array([120, 0, 150])
-        upper_white = np.array([160, 40, 200])
-        mask_white = cv2.inRange(hsv, lower_white, upper_white)
-        morph = mask_white
-        morph = cv2.erode(morph,kernel,iterations = 1)
-        morph = cv2.dilate(morph,kernel,iterations = 10)
-        morph = cv2.erode(morph,kernel,iterations = 5)
-        mask_white = morph
-
-        # combined mask
-        combined_mask = cv2.bitwise_or(mask, plywood_mask_hsv)
-        #combined_mask = cv2.bitwise_or(combined_mask, mask_white)
-        morph = cv2.dilate(combined_mask, kernel, iterations=2)
-        combined_mask = morph
-
-        # Display the combined mask
-        res = cv2.bitwise_and(frame,frame, mask= combined_mask)
-        #cv2.imshow("Combined Mask", combined_mask)
-        #cv2.waitKey(1)
-
-        res = combined_mask
         # Detect edges using Canny edge detection
         edges = cv2.Canny(green_mask, 50, 150)
         # Find contours in the edge-detected image
@@ -215,7 +169,7 @@ class GateDetector(Node):
         # Draw contours on the original frame
         for contour in contours:
             area = cv2.contourArea(contour)
-            if area < 3000:
+            if area < 2000:
                 continue
 
             # Fit a minimum enclosing circle around the contour
@@ -223,7 +177,7 @@ class GateDetector(Node):
             center = (int(x), int(y))
             radius = int(radius)
 
-            if radius < 50:
+            if radius < 40:
                 continue
 
             # Store the midpoint and dimensions of the circle
@@ -267,26 +221,19 @@ class GateDetector(Node):
             cv2.putText(res, shape, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
             # Draw the bounding rectangle
             cv2.rectangle(res, (x, y), (x + w, y + h), (255, 0, 0), 2)
-            '''
-            (x,y),radius = cv2.minEnclosingCircle(contour)
-            center = (int(x),int(y))
-            radius = int(radius)
-            cv2.circle(frame,center,radius,(0,255,0),2)
-            ellipse = cv2.fitEllipse(contour)
-            cv2.ellipse(frame,ellipse,(0,255,0),2)
-            '''
 
         # Draw the largest circle
         if largest_circle:
             print("found circle")
             center, radius = largest_circle
             if radius > 200:
+                gate_detected = True
                 cv2.circle(res, center, radius, (0, 255, 255), 2)
                 cv2.putText(res, f"Radius: {radius}", (center[0] - 40, center[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
                 cv2.imshow("Largest circle", res)
                 cv2.waitKey(1)
                 # Align the gate
-                image_center_height = image_height / 3
+                image_center_height = image_height / 2
                 image_center_width = image_width / 2
 
                 error_height = center[1] - image_center_height
@@ -335,16 +282,31 @@ class GateDetector(Node):
                         self.publication.publish(msg)
                         time.sleep(1.5) # stabilization time
 
+        if not gate_detected:
+            print("searching")
+            aligned = False
+            msg = String()
+            # Calculate the center of mass of the green mask
+            moments = cv2.moments(green_mask)
+            if moments["m00"] != 0:
+                center_x = int(moments["m10"] / moments["m00"])
+            else:
+                center_x = 0  # Default to left if no green detected
+
+            # Determine if most of the white is on the left or right
+            if center_x < image_width // 2:
+                msg.data = "left"
+            else:
+                msg.data = "right"
+            self.publication.publish(msg)
+            time.sleep(1) # stabilization time
+
         
 
         # Draw all circle midpoints
         for center, radius in circle_midpoints:
             cv2.circle(frame, center, 3, (255, 0, 0), -1)
             cv2.putText(frame, f"({center[0]}, {center[1]})", (center[0] + 5, center[1] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 1)
-
-        #frame = res
-        #cv2.imshow("Shape Detection", frame)
-
 
 
 def test():
