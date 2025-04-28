@@ -26,6 +26,8 @@ red_x2 = 0
 red_y1 = 0
 red_y2 = 0
 
+num_of_gates = 0
+
 class GateDetector(Node):
     def __init__(self):
         super().__init__('gate_detector')
@@ -89,6 +91,13 @@ class GateDetector(Node):
         self.processing_image = False
     
     def detect_gate(self, image):
+        global num_of_gates
+        global red_x1
+        global red_x2
+        global red_y1
+        global red_y2
+        global red_area
+        
         frame = image
         image_height = frame.shape[0]
         image_width = frame.shape[1]
@@ -122,7 +131,7 @@ class GateDetector(Node):
                 largest_area = area
                 largest_gate = (x1, y1, x2, y2, largest_area)
 
-        if largest_gate:
+        if largest_gate and num_of_gates<4:
             x1, y1, x2, y2, area = largest_gate
             # Draw a red dot in the center of the largest gate
             center_x_gate = (x1 + x2) // 2
@@ -153,6 +162,10 @@ class GateDetector(Node):
 
             height_threshold = image_height / 9
             width_threshold = image_width / 9
+            
+            #if num_of_gates>3:
+            #	height_threshold = image_height / 6
+            #	width_threshold = image_width / 6
 
             # Align the height
             aligned = True
@@ -181,21 +194,37 @@ class GateDetector(Node):
             if aligned == True:
                 msg = String()
                 # If the radius of the gate is large enough, move a lot forward
-                if (x2-x1) > 0.9*image_height:
-                    msg.data = "forwardlong"
-                    self.publication.publish(msg)
-                    time.sleep(2.5) # stabilization time
-                # Otherwise take only a small step
+                if num_of_gates<4:
+                    if (x2-x1) > 0.9*image_height:
+                        msg.data = "forwardlong"
+                        self.publication.publish(msg)
+                        time.sleep(2.5) # stabilization time
+                        num_of_gates = num_of_gates + 1
+                        print(f"GATES PASSED {num_of_gates}")
+                    # Otherwise take only a small step
+                    else:
+                        msg.data = "forward"
+                        self.publication.publish(msg)
+                        time.sleep(1.5) # stabilization time
                 else:
-                    msg.data = "forward"
-                    self.publication.publish(msg)
-                    time.sleep(1.5) # stabilization time
+                    if (red_x2-red_x1) > 0.9*image_height:
+                        msg.data = "forwardlong"
+                        self.publication.publish(msg)
+                        time.sleep(2.5) # stabilization time
+                        num_of_gates = num_of_gates + 1
+                        print(f"GATES PASSED {num_of_gates}")
+                    # Otherwise take only a small step
+                    else:
+                        msg.data = "forward"
+                        self.publication.publish(msg)
+                        time.sleep(1.5) # stabilization time
         else:
-            #### UPDATE THE ROTATION DIRECTION BASED ON THE RACING DAY GATE ARRANGEMENT!!!
-            msg = String()
-            #msg.data = "rightsmall"
-            #self.publication.publish(msg)
-            #time.sleep(1.5) # stabilization time
+            if num_of_gates<4:
+                #### UPDATE THE ROTATION DIRECTION BASED ON THE RACING DAY GATE ARRANGEMENT!!!
+                msg = String()
+                msg.data = "rightsmall"
+                self.publication.publish(msg)
+                time.sleep(1.5) # stabilization time
 
         # Draw all circle midpoints
         #for center, radius in circle_midpoints:
@@ -212,6 +241,12 @@ def test():
     #detect_gate(frame)
 
 def detect_stop(image):
+    global red_x1
+    global red_x2
+    global red_y1
+    global red_y2
+    global red_area
+
     frame = image
     
     blur = cv2.GaussianBlur(frame,(15,15),0)
@@ -245,7 +280,7 @@ def detect_stop(image):
     # Convert red image and mask back to BGR for OpenCV display
     mask_red1 = cv2.inRange(hsv, lower_red1, upper_red1)
     mask_red2 = cv2.inRange(hsv, lower_red2, upper_red2)
-    red_mask = mask_red2
+    red_mask = cv2.bitwise_or(mask_red1, mask_red2)
 
     # Apply the red mask to the image
     red_result = cv2.bitwise_and(frame, frame, mask=red_mask)
@@ -261,6 +296,7 @@ def detect_stop(image):
         print(f"{cv2.boundingRect(XX)}")
     if contours:
     	red_contours = max(contours, key=cv2.contourArea)
+    	moments = cv2.moments(red_mask)
     else:
     	return 0
     print(f">>>>>>>???{cv2.boundingRect(red_contours)}")
@@ -275,7 +311,6 @@ def detect_stop(image):
         red_y2 = red_y1 + h
         print(f">>>>>>>{cv2.boundingRect(red_contours)}")
         cv2.rectangle(frame, (red_x1, red_y1), (red_x2, red_y2), (0, 255, 0), 2)
-        print(f">>>>>")
         #cv2.imwrite("hei red.jpg", frame)
         #cv2.imshow("Red Mask Applied", frame)
         print(f">>>>>showed")
