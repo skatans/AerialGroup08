@@ -31,24 +31,29 @@ class GateDetector(Node):
         self.detected_red_size = 0
         self.flying = False
         self.aligned = False
-        self.num_of_gates = 4
+        self.num_of_gates = 0
 
     # Create a mask for the specified color (red for stop signal and yellow for start signal)
     # Green is not in use, we are using Lipei's model instead
     def create_mask(self, image, color):
         frame = image
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
         if color == 'red':
-            lower_red1 = np.array([0, 50, 50])
-            upper_red1 = np.array([10, 245, 245])
-            lower_red2 = np.array([170, 150, 50])
-            upper_red2 = np.array([180, 245, 245])
+            lower_red1 = np.array([0, 70, 50])
+            upper_red1 = np.array([10, 255, 180])
+            lower_red2 = np.array([170, 70, 50])
+            upper_red2 = np.array([180, 255, 180])
 
             mask_red1 = cv2.inRange(hsv, lower_red1, upper_red1)
             mask_red2 = cv2.inRange(hsv, lower_red2, upper_red2)
             red_mask = cv2.bitwise_or(mask_red1, mask_red2)
 
-            return red_mask
+            morph = mask_red2
+            #morph = cv2.erode(morph,kernel,iterations = 3)
+            #morph = cv2.dilate(morph,kernel,iterations = 5)
+
+            return morph
 
         elif color == 'green':
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -56,7 +61,6 @@ class GateDetector(Node):
             upper_green = np.array([85, 255, 240])
             mask = cv2.inRange(hsv, lower_green, upper_green)
 
-            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
             morph = mask
             morph = cv2.erode(morph,kernel,iterations = 2)
             morph = cv2.dilate(morph,kernel,iterations = 3)
@@ -73,24 +77,26 @@ class GateDetector(Node):
 
     def check_up_down(self, error_height, height_threshold):
         if abs(error_height) > height_threshold:
-            print("send up/down")
             aligned = False
             msg = String()
             if error_height > 0:
+                self.get_logger().info('Sending down command, error height: ' + str(error_height))
                 msg.data = 'down'
             else:
+                self.get_logger().info('Sending up command, error height: ' + str(error_height))
                 msg.data = 'up'
             self.publication.publish(msg)
             time.sleep(1.5)
 
     def check_right_left(self, error_width, width_threshold):
         if abs(error_width) > width_threshold:
-            print("send right/left")
             self.aligned = False
             msg = String()
             if error_width > 0:
+                self.get_logger().info('Sending right command, error width: ' + str(error_width))
                 msg.data = "right"
             else:
+                self.get_logger().info('Sending left command, error width: ' + str(error_width))
                 msg.data = "left"
             self.publication.publish(msg)
             time.sleep(1.5)
@@ -110,33 +116,54 @@ class GateDetector(Node):
         #self.get_logger().info('Receiving video frame')
         frame = self.br.imgmsg_to_cv2(data, 'bgr8')
 
-        if self.detect_takeoff_signal(frame):
+        if not self.flying and self.num_of_gates == 0:
+            request = TelloAction.Request()
+            self.get_logger().info('Takeoff command')
+            request.cmd = 'takeoff'
+            self.flying = True
+            self.num_of_gates = 4
+            future = self.client.call_async(request)
+            future.add_done_callback(self.service_response_callback)
+
+            time.sleep(1.5)
+
+            msg = String()
+            self.get_logger().info('Sending up command')
+            msg.data = 'up'
+            self.publication.publish(msg)
+            time.sleep(1.5)
+
+        if False and self.detect_takeoff_signal(frame):
             while not self.client.wait_for_service(timeout_sec=1.0):
                 print('Service not available, waiting...')
             request = TelloAction.Request()
-            self.get_logger().info('Takeoff command')
             if not self.flying:
+                self.get_logger().info('Takeoff command')
                 request.cmd = 'takeoff'
                 self.flying = True
             else:
+                self.get_logger().info('Land command')
                 request.cmd = 'land'
-                self.flying = False
+                #self.flying = False
             future = self.client.call_async(request)
             future.add_done_callback(self.service_response_callback)
         if self.num_of_gates == 4:
-            self.find_stop_signal(frame)
-        if self.num_of_gates == 4 and self.detect_stop_signal(frame):
-            while not self.client.wait_for_service(timeout_sec=1.0):
-                print('Service not available, waiting...')
+            if self.detect_stop_signal(frame):
+                while not self.client.wait_for_service(timeout_sec=1.0):
+                    print('Service not available, waiting...')
 
-            request = TelloAction.Request()
-            self.get_logger().info('Land command')
-            request.cmd = 'land'
+                request = TelloAction.Request()
+                self.get_logger().info('Sending land command')
+                request.cmd = 'land'
+                #self.flying = False
 
-            future = self.client.call_async(request)
-            future.add_done_callback(self.service_response_callback)
+                future = self.client.call_async(request)
+                future.add_done_callback(self.service_response_callback)
+            else:
+                self.find_stop_signal(frame)
 
-        self.detect_gate(frame)
+        if self.num_of_gates > 4:
+            self.detect_gate(frame)
 
         self.processing_image = False
     
@@ -168,49 +195,74 @@ class GateDetector(Node):
         image_width = frame.shape[1]
 
         # Image centerpoint, a bit higher than the middle of the image because the camera points down
-        image_center_height = image_height / 3
-        image_center_width = image_width / 2
+        image_center_height = image_height // 2
+        image_center_width = image_width // 2
 
         # How large area is considered to be midpoint good enough
-        height_threshold = image_height / 9
-        width_threshold = image_width / 9
+        height_threshold = image_height / 5
+        width_threshold = image_width / 5
 
         red_mask = self.create_mask(frame, 'red')
-        edges = cv2.Canny(red_mask, 50, 150)
-        # Find contours in the edge-detected image
-        contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        # Calculate the center of the red area
-        moments = cv2.moments(red_mask)
-        if moments["m00"] != 0:
-            center_x = int(moments["m10"] / moments["m00"])
-            center_y = int(moments["m01"] / moments["m00"])
-            cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
-            cv2.putText(frame, f"Center: ({center_x}, {center_y})", (center_x + 10, center_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+        # Calculate the mass center of the red area
+        red_ratio = cv2.countNonZero(red_mask) / (red_mask.shape[0] * red_mask.shape[1])
+        frame = cv2.bitwise_and(frame, frame, mask=red_mask)
+
+        # Draw a rectangle with the center being the image center and the sides being error radius away
+        top_left = (int(image_center_width - width_threshold), int(image_center_height - height_threshold))
+        bottom_right = (int(image_center_width + width_threshold), int(image_center_height + height_threshold))
+        cv2.rectangle(frame, top_left, bottom_right, (255, 0, 0), 2)
+        cv2.putText(frame, "Error Radius", (top_left[0], top_left[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+
+        # Draw the center of the image on the frame
+        cv2.circle(frame, ((image_center_width), (image_center_height)), 5, (0, 0, 255), -1)
+        cv2.putText(frame, f"Image center: ({image_center_width}, {image_center_height})", ((image_center_width) + 10, (image_center_height) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 255), 2)
+
+        cv2.imshow("Center", frame)
+
+        if red_ratio < 0.004:
+            #self.get_logger().info('Red area too small, skipping center calculation')
+            return
+
         else:
-            center_x, center_y = None, None
+            #self.get_logger().info('Red area ok')
 
-        # If the center of the red area is found, check if it is aligned
-        if center_x is not None and center_y is not None:
-            aligned = True
-            # Check error in height and width
-            error_height = center_y - image_center_height
-            error_width = center_x - image_center_width
-            # Check horizontal and vertical misalignment, the functions handle the movement if necessary
-            if abs(error_height) > height_threshold:
-                aligned = False
-                self.check_up_down(error_height, height_threshold)
-            if abs(error_width) > width_threshold:
-                aligned = False
-                self.check_right_left(error_width, width_threshold)
+            moments = cv2.moments(red_mask)
+            if moments["m00"] != 0:
+                self.get_logger().info('Finding center')
+                center_x = int(moments["m10"] / moments["m00"])
+                center_y = int(moments["m01"] / moments["m00"])
 
-            # If the red area is aligned, move forward
-            if aligned:
-                print("aligned with red area")
-                msg = String()
-                msg.data = "forward"
-                self.publication.publish(msg)
-                time.sleep(1.5) # stabilization time
+                # Draw the center of the red area on the frame
+                cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
+                cv2.putText(frame, f"Red center: ({center_x}, {center_y})", (center_x + 10, center_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 255), 2)
+
+                cv2.imshow("Center", frame)
+            else:
+                center_x, center_y = None, None
+                return
+
+            # If the center of the red area is found, check if it is aligned
+            if center_x is not None and center_y is not None:
+                aligned = True
+                # Check error in height and width
+                error_height = center_y - image_center_height
+                error_width = center_x - image_center_width
+                # Check horizontal and vertical misalignment, the functions handle the movement if necessary
+                if abs(error_height) > height_threshold:
+                    aligned = False
+                    self.check_up_down(error_height, height_threshold)
+                elif abs(error_width) > width_threshold:
+                    aligned = False
+                    self.check_right_left(error_width, width_threshold)
+
+                # If the red area is aligned, move forward
+                if aligned:
+                    self.get_logger().info('Aligned with red area, send forward')
+                    msg = String()
+                    msg.data = "forward"
+                    self.publication.publish(msg)
+                    time.sleep(1.5) # stabilization time
 
     def detect_stop_signal(self, image):
         frame = image
@@ -223,27 +275,32 @@ class GateDetector(Node):
         # Apply the red mask to the image
         red_result = cv2.bitwise_and(frame, frame, mask=red_mask)
 
-        red_edges = cv2.Canny(red_result, 50, 150)
-        cv2.imshow("Red Mask Applied", red_result)
-        cv2.waitKey(1)
+        #cv2.imshow("Red Mask Applied", red_result)
+        #cv2.waitKey(1)
 
-        # Find contours in the edge-detected image
-        red_contours, _ = cv2.findContours(red_edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        # Check for a big red area in the contours
-        for contour in red_contours:
-            area = cv2.contourArea(contour)
-            cv2.putText(red_result, f"Area: {area}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-            if area > 3000:  # Threshold for a "big" red area
-                print(area)
-                x, y, w, h = cv2.boundingRect(contour)
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                cv2.putText(frame, "Big Red Area", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        # Define the center region of the frame
+        center_height_start = red_result.shape[0] // 3
+        center_height_end = 2 * red_result.shape[0] // 3
+        center_width_start = red_result.shape[1] // 3
+        center_width_end = 2 * red_result.shape[1] // 3
 
-                cv2.imshow("Red Mask Applied", red_result)
-                cv2.waitKey(1)
-                return 1
+        # Extract the center region
+        center_region = red_mask[center_height_start:center_height_end, center_width_start:center_width_end]
+
+        # Count the white pixels in the center region
+        white_pixels = cv2.countNonZero(center_region)
+        #total_pixels = center_region.shape[0] * center_region.shape[1]
+        #white_pixels = cv2.countNonZero(red_mask)
+        total_pixels = red_result.shape[0] * red_result.shape[1]
+        red_ratio = white_pixels / total_pixels
+        #self.get_logger().info('Red ratio :' + str(red_ratio))
+
+        if red_ratio > 0.03:
+            return 1
         return 0
+
     def detect_gate(self, image):
+        return
         frame = image
         image_height = frame.shape[0]
         image_width = frame.shape[1]
