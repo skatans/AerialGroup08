@@ -359,188 +359,122 @@ class GateDetector(Node):
         return 0
 
     def detect_gate(self, image):
-        return
         frame = image
         image_height = frame.shape[0]
         image_width = frame.shape[1]
-        blur = cv2.GaussianBlur(frame,(15,15),0)
-        cv2.waitKey(1)
-        gate_detected = False
-
-        image_center_height = image_height / 2
-        image_center_width = image_width / 2
-
-        height_threshold = image_height / 10
-        width_threshold = image_width / 10
-
-        '''FILTERING'''
-        # green mask
-        red_mask = self.create_mask(frame, 'red')
-        green_mask = self.create_mask(frame, 'green')
-
-        # Compare red and green areas
-        self.detected_red_size = cv2.countNonZero(red_mask)
-        self.detected_green_size = cv2.countNonZero(green_mask)
-
-        # If red areas are larger than green areas, check for the stop sign
-        if self.detected_red_size > self.detected_green_size:
-            edges = cv2.Canny(red_mask, 50, 150)
-            # Find contours in the edge-detected image
-            contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-            # Calculate the center of the red area
-            moments = cv2.moments(red_mask)
-            if moments["m00"] != 0:
-                center_x = int(moments["m10"] / moments["m00"])
-                center_y = int(moments["m01"] / moments["m00"])
-                #cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
-                #cv2.putText(frame, f"Center: ({center_x}, {center_y})", (center_x + 10, center_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-            else:
-                center_x, center_y = None, None
-
-            if center_x is not None and center_y is not None:
-
-
-                error_height = center_x - image_center_height
-                error_width = center_y - image_center_width
-                aligned = True
-                if abs(error_height) > height_threshold:
-                    aligned = False
-                    self.check_up_down(error_height, height_threshold)
-                if abs(error_width) > width_threshold:
-                    aligned = False
-                    self.check_right_left(error_width, width_threshold)
-
-                if aligned:
-                    print("aligned with red area")
-                    msg = String()
-                    msg.data = "forward"
-                    self.publication.publish(msg)
-                    time.sleep(1.5) # stabilization time
-        else:
-            edges = cv2.Canny(green_mask, 50, 150)
-            # Find contours in the edge-detected image
-            contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
-            # Find the largest circle and midpoints of all circles
-            largest_circle = None
-            largest_radius = 0
-            circle_midpoints = []
+        results = self.model(frame)
+        #results = []
+        detections = results.xyxy[0]
 
-            # Draw contours on the original frame
-            for contour in contours:
-                area = cv2.contourArea(contour)
-                if area < 2000:
-                    continue
+        #draw result
+        for *box, conf, cls in detections:
+            x1, y1, x2, y2 = map(int, box)
+            label = self.model.names[int(cls)]
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 1)
+            cv2.putText(frame, f'{label} {conf:.2f}', (x1, y1 - 10),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
+    
+        largest_gate = None
+        largest_area = 0
 
-                # Fit a minimum enclosing circle around the contour
-                (x, y), radius = cv2.minEnclosingCircle(contour)
-                center = (int(x), int(y))
-                radius = int(radius)
+        # Loop through detections and find the largest gate
+        for *box, conf, cls in detections:
+            label = self.model.names[int(cls)]
 
-                if radius < 40:
-                    continue
 
-                # Store the midpoint and dimensions of the circle
-                circle_midpoints.append((center, radius))
+            x1, y1, x2, y2 = map(int, box)
+            width = x2 - x1
+            height = y2 - y1
+            area = width * height
+            # Check if this gate is larger than the previous largest gate
+            if area > largest_area:
+                largest_area = area
+                largest_gate = (x1, y1, x2, y2, largest_area)
 
-                # Check if this is the largest circle
-                if radius > largest_radius:
-                    largest_radius = radius
-                    largest_circle = (center, radius)
+        if largest_gate and self.num_of_gates<4:
+            x1, y1, x2, y2, area = largest_gate
+            # Draw a red dot in the center of the largest gate
+            center_x_gate = (x1 + x2) // 2
+            center_y_gate = (y1 + y2) // 2
+            cv2.circle(frame, (center_x_gate, center_y_gate), 5, (0, 0, 255), -1)  #
+            # Draw larggest gate bounding box
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
+            self.publisher.publish(self.br.cv2_to_imgmsg(frame))
 
-                # Approximate the contour to reduce the number of points
-                epsilon = 0.02 * cv2.arcLength(contour, True)
-                approx = cv2.approxPolyDP(contour, epsilon, True)
-                # Check the number of vertices in the approximated contour
-                vertices = len(approx)
-                if vertices == 4:
-                    shape = "Square/Rectangle"
-                elif vertices > 4:
-                    shape = "Circle"
-                else:
-                    shape = "Other"
+        # Draw the largest circle
+        if largest_gate:
+            #center, radius = largest_gate
+            #cv2.circle(frame, center, radius, (0, 255, 255), 2)
+            #cv2.putText(frame, f"Radius: {radius}", (center[0] - 40, center[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
+            # Align the gate
+            image_center_height = image_height / 3
+            image_center_width = image_width / 2
 
-                # Get the width and height of the bounding rectangle
-                x, y, w, h = cv2.boundingRect(contour)
-                width = w
-                height = h
-                # Calculate the aspect ratio
-                aspect_ratio = float(width) / height
-                print("Aspect Ratio:", aspect_ratio)
-                # Check if the aspect ratio is within a certain range
-                if aspect_ratio < 0.5 or aspect_ratio > 2:
-                    continue
-                elif aspect_ratio < 0.9:
-                    cv2.putText(green_mask, "danger", (x, y + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+            error_height = center_y_gate - image_center_height
+            error_width = center_x_gate - image_center_width
 
-            
-                # Draw the contour and label the shape
-                cv2.drawContours(green_mask, [approx], -1, (0, 255, 0), 2)
-                x, y, w, h = cv2.boundingRect(approx)
-                cv2.putText(green_mask, shape, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-                # Draw the bounding rectangle
-                cv2.rectangle(green_mask, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            height_threshold = image_height / 9
+            width_threshold = image_width / 9
 
-            # Draw the largest circle
-            if largest_circle:
-                center, radius = largest_circle
-                if radius > 200:
-                    gate_detected = True
-                    cv2.circle(green_mask, center, radius, (0, 255, 255), 2)
-                    cv2.putText(green_mask, f"Radius: {radius}", (center[0] - 40, center[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
-                    cv2.imshow("Largest circle", res)
-                    cv2.waitKey(1)
-
-                    error_height = center[1] - image_center_height
-                    error_width = center[0] - image_center_width
-
-                    # Align the gate
-                    aligned = True
-                    if abs(error_height) > height_threshold:
-                        aligned = False
-                        self.check_up_down(error_height, height_threshold)
-                    if abs(error_width) > width_threshold:
-                        aligned = False
-                        self.check_right_left(error_width, width_threshold)
-
-                    if aligned:
-                        print("aligned")
-                        msg = String()
-                        # If the radius of the gate is large enough, move a lot forward
-                        if radius*2 > 0.9*image_height:
-                            msg.data = "forwardlong"
-                            self.publication.publish(msg)
-                            time.sleep(2.5) # stabilization time
-                        # Otherwise take only a small step
-                        else:
-                            msg.data = "forward"
-                            self.publication.publish(msg)
-                            time.sleep(1.5) # stabilization time
-
-            if not gate_detected:
-                print("searching")
-                msg = String()
+            # Align the height
+            aligned = True
+            if abs(error_height) > height_threshold:
                 aligned = False
-                # Calculate the horizontal center of mass of the green mask
-                moments = cv2.moments(green_mask)
-                if moments["m00"] != 0:
-                    center_x = int(moments["m10"] / moments["m00"])
+                msg = String()
+                if error_height > 0:
+                    msg.data = 'down'
                 else:
-                    center_x = 0  # Default to left if no green detected
-
-                # Determine if most of the white is on the left or right
-                if center_x < image_width // 2:
-                    msg.data = "left"
-                else:
-                    msg.data = "right"
+                    msg.data = 'up'
                 self.publication.publish(msg)
-                time.sleep(1) # stabilization time
+                time.sleep(1.5) # stabilization time
+        
+            # Align width
+            if abs(error_width) > width_threshold:
+                aligned = False
+                msg = String()
+                if error_width > 0:
+                    msg.data = "right"
+                else:
+                   msg.data = "left"
+                self.publication.publish(msg)
+                time.sleep(1.5) # stabilization time
 
-            # Draw all circle midpoints
-            for center, radius in circle_midpoints:
-                cv2.circle(frame, center, 3, (255, 0, 0), -1)
-                cv2.putText(frame, f"({center[0]}, {center[1]})", (center[0] + 5, center[1] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 1)
+            # Move forward if alignment is ok
+            if aligned == True:
+                msg = String()
+                # If the radius of the gate is large enough, move a lot forward
+                if self.num_of_gates<4:
+                    if (x2-x1) > 0.9*image_height:
+                        msg.data = "forwardlong"
+                        self.publication.publish(msg)
+                        time.sleep(2.5) # stabilization time
+                        self.num_of_gates = self.num_of_gates + 1
+                        print(f"GATES PASSED {self.num_of_gates}")
+                    # Otherwise take only a small step
+                    else:
+                        msg.data = "forward"
+                        self.publication.publish(msg)
+                        time.sleep(1.5) # stabilization time
+                else:
+                    if (red_x2-red_x1) > 0.9*image_height:
+                        msg.data = "forwardlong"
+                        self.publication.publish(msg)
+                        time.sleep(2.5) # stabilization time
+                        #num_of_gates = num_of_gates + 1
+                        print(f"GATES PASSED {num_of_gates}")
+                    # Otherwise take only a small step
+                    else:
+                        msg.data = "forward"
+                        self.publication.publish(msg)
+                        time.sleep(1.5) # stabilization time
+        else:
+            if self.num_of_gates<4:
+                #### UPDATE THE ROTATION DIRECTION BASED ON THE RACING DAY GATE ARRANGEMENT!!!
+                msg = String()
+                msg.data = "rightsmall"
+                self.publication.publish(msg)
+                time.sleep(1.5) # stabilization time
 
 
 def test():
