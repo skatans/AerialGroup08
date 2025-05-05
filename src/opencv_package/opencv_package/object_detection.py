@@ -1,71 +1,56 @@
-import rclpy
-from rclpy.node import Node
-from sensor_msgs.msg import Image
 
-from rclpy.qos import QoSProfile, QoSReliabilityPolicy
+def main():
+    frame = cv2.imread("/home/tuisku/Downloads/portti.jpeg", cv2.IMREAD_COLOR)
+    #cv2.imshow("Received frame", frame)
+    cv2.waitKey(1)
+    # Convert the image to grayscale for shape detection
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-from cv_bridge import CvBridge
-import cv2
-from ultralytics import YOLO
+    # Apply GaussianBlur to reduce noise and improve edge detection
+    blur = cv2.GaussianBlur(gray,(15,15),0)
+    #th3 = cv2.medianBlur(gray,5)
+    #th3 = cv2.adaptiveThreshold(blur,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,11,2)
+    #ret3,th3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
+    '''
+    # Rectangular Kernel
+    kernel_rq = cv2.getStructuringElement(cv2.MORPH_RECT,(5,5))
+    # Elliptical Kernel
+    kernel_el = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
+    sharpen = cv2.filter2D(blur, -1, kernel_rq)
+    '''
 
-class ObjectDetectionNode(Node):
+    # Detect edges using Canny edge detection
+    edges = cv2.Canny(blur, 50, 150)
 
-    def __init__(self):
-        super().__init__('object_detection_node')
-        qos_profile = QoSProfile(reliability=QoSReliabilityPolicy.BEST_EFFORT, depth=1)
-        self.subscription = self.create_subscription(Image, '/drone1/image_raw', self.listener_callback, qos_profile=qos_profile)
-        self.bridge = CvBridge()
+    # Find contours in the edge-detected image
+    contours, _ = cv2.findContours(blur, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    def listener_callback(self, msg):
+    frame = blur
 
-        cv_image = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
-        print("ok")
-        cv2.imshow("camera1", cv_image)
-        cv2.waitKey(1)
+    for contour in contours:
+        # Approximate the contour to reduce the number of points
+        epsilon = 0.02 * cv2.arcLength(contour, True)
+        approx = cv2.approxPolyDP(contour, epsilon, True)
 
-        yolo = YOLO('yolov8s.pt')
+        # Check the number of vertices in the approximated contour
+        vertices = len(approx)
 
-        results = yolo.track(cv_image, stream=True)
+        if vertices == 4:
+            shape = "Square/Rectangle"
+        elif vertices > 4:
+            shape = "Circle"
+        else:
+            shape = "Other"
 
-        for result in results:
-            # get the classes names
-            classes_names = result.names
+        # Draw the contour and label the shape
+        cv2.drawContours(frame, [approx], -1, (0, 255, 0), 2)
+        x, y, w, h = cv2.boundingRect(approx)
+        cv2.putText(frame, shape, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
 
-            # iterate over each box
-            for box in result.boxes:
-                # check if confidence is greater than 40 percent
-                if box.conf[0] > 0.4:
-                    # get coordinates
-                    [x1, y1, x2, y2] = box.xyxy[0]
-                    # convert to int
-                    x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+    # Display the frame with detected shapes
+    cv2.imshow("Shape Detection", frame)
 
-                    # get the class
-                    cls = int(box.cls[0])
-
-                    # get the class name
-                    class_name = classes_names[cls]
-
-                    # get the respective colour
-                    colour = (255, 0, 0)
-
-                    # draw the rectangle
-                    cv2.rectangle(cv_image, (x1, y1), (x2, y2), colour, 2)
-
-                    # put the class name and confidence on the image
-                    cv2.putText(cv_image, f'{classes_names[int(box.cls[0])]} {box.conf[0]:.2f}', (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, colour, 2)
-                
-        # show the image
-        cv2.imshow('frame', cv_image)
-
-def main(args=None):
-    rclpy.init(args=args)
-    node = ObjectDetectionNode()
-    rclpy.spin(node)
-    node.destroy_node()
-    rclpy.shutdown()
 
 if __name__ == '__main__':
-    main()    
-
+    main()
