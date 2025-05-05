@@ -21,6 +21,7 @@ class CommandSubscriber(Node):
         if self.processing:
             self.get_logger().info('Ignoring new data during delay')
             return
+
         self.get_logger().info('Receiving command')
         pub_msg = Twist()
         pub_msg.linear.x = 0.0
