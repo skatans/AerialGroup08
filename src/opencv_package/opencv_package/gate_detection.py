@@ -9,7 +9,7 @@ import cv2
 import numpy as np
 from tello_msgs.srv import TelloAction
 import torch
-from djitellopy import Tello # test
+#from djitellopy import Tello # test
 
 import time
 
@@ -557,7 +557,7 @@ def main(args=None):
     rclpy.spin(gate_detector)
     gate_detector.destroy_node()
     rclpy.shutdown()
-    
+
 
 if __name__ == '__main__':
     main()
