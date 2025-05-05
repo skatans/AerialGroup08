@@ -8,6 +8,8 @@ from rclpy.qos import QoSProfile, QoSReliabilityPolicy
 import cv2
 import numpy as np
 from tello_msgs.srv import TelloAction
+import torch
+from djitellopy import Tello # test
 
 import time
 
@@ -20,18 +22,87 @@ class GateDetector(Node):
         )
         self.processing_image = False # flag to ignore incoming images while processing the current one
         self.publication = self.create_publisher(String, '/cmd_string', 10)
-        self.client = self.create_client(TelloAction, 'tello_action')
+        self.client = self.create_client(TelloAction, '/tello_action')
+        self.publisher = self.create_publisher(Image, '/larggest_gate', 10)
         self.subscription = self.create_subscription(
             Image,
             '/image_raw',
             self.listener_callback,
-            qos_profile=qos_profile)
+            10) # qos_profile=qos_profile
         self.br = CvBridge()
-        self.detected_graan_size = 0
-        self.detected_red_size = 0
-        self.flying = False
-        self.aligned = False
+        self.model = torch.hub.load('../../../../Documents/ultralytics', 'custom', source='local', path='../../../../Documents/ultralytics/weights/bests640e75n1010.pt', force_reload=True)
+        self.model.eval()
         self.num_of_gates = 0
+        self.flying = False
+        print("model inited...")
+
+    def service_response_callback(self, future):
+        try:
+            response = future.result()
+            print(f"Service call succeeded: {response}")
+        except Exception as e:
+            print(f"Service call failed: {e}")
+
+    # Listener callback/main thing
+    def listener_callback(self, data):
+        self.get_logger().info('Receiving video frame')
+        if self.processing_image:
+            return
+        self.processing_image = True
+
+        self.get_logger().info('Receiving video frame')
+        frame = self.br.imgmsg_to_cv2(data, 'bgr8')
+
+        if not self.flying and self.num_of_gates == 0:
+            request = TelloAction.Request()
+            self.get_logger().info('Takeoff command')
+            request.cmd = 'takeoff'
+            self.flying = True
+            self.num_of_gates = 4
+            future = self.client.call_async(request)
+            future.add_done_callback(self.service_response_callback)
+
+            time.sleep(1.5)
+
+            msg = String()
+            self.get_logger().info('Sending up command')
+            msg.data = 'up'
+            self.publication.publish(msg)
+            time.sleep(1.5)
+        '''
+        if self.detect_takeoff_signal(frame):
+            while not self.client.wait_for_service(timeout_sec=1.0):
+                print('Service not available, waiting...')
+            request = TelloAction.Request()
+            self.get_logger().info('Takeoff command')
+            if not self.flying:
+                request.cmd = 'takeoff'
+                self.flying = True
+            else:
+                request.cmd = 'land'
+                self.flying = False
+            future = self.client.call_async(request)
+            future.add_done_callback(self.service_response_callback)
+        '''
+        if self.num_of_gates == 4:
+            if self.detect_stop_signal(frame):
+                while not self.client.wait_for_service(timeout_sec=1.0):
+                    print('Service not available, waiting...')
+
+                request = TelloAction.Request()
+                self.get_logger().info('Sending land command')
+                request.cmd = 'land'
+                #self.flying = False
+
+                future = self.client.call_async(request)
+                future.add_done_callback(self.service_response_callback)
+            else:
+                self.find_stop_signal(frame)
+
+        if self.num_of_gates < 4:
+            self.detect_gate(frame)
+
+        self.processing_image = False
 
     # Create a mask for the specified color (red for stop signal and yellow for start signal)
     # Green is not in use, we are using Lipei's model instead
@@ -75,6 +146,7 @@ class GateDetector(Node):
 
             return yellow_mask
 
+    # Check if the midpoint is aligned vertically, if not move up or down
     def check_up_down(self, error_height, height_threshold):
         if abs(error_height) > height_threshold:
             aligned = False
@@ -88,6 +160,7 @@ class GateDetector(Node):
             self.publication.publish(msg)
             time.sleep(1.5)
 
+    # Check if the midpoint is aligned horizontally, if not move up or down
     def check_right_left(self, error_width, width_threshold):
         if abs(error_width) > width_threshold:
             self.aligned = False
@@ -101,71 +174,57 @@ class GateDetector(Node):
             self.publication.publish(msg)
             time.sleep(1.5)
 
-    def service_response_callback(self, future):
-        try:
-            response = future.result()
-            print(f"Service call succeeded: {response}")
-        except Exception as e:
-            print(f"Service call failed: {e}")
+    # Check for the stop sign, and navigate towards it
+    def find_stop_signal(self, image):
+        frame = image
 
-    def listener_callback(self, data):
-        if self.processing_image:
-            return
-        self.processing_image = True
+        image_height = frame.shape[0]
+        image_width = frame.shape[1]
 
-        #self.get_logger().info('Receiving video frame')
-        frame = self.br.imgmsg_to_cv2(data, 'bgr8')
+        # Image centerpoint, a bit higher than the middle of the image because the camera points down
+        image_center_height = image_height / 3
+        image_center_width = image_width / 2
 
-        if not self.flying and self.num_of_gates == 0:
-            request = TelloAction.Request()
-            self.get_logger().info('Takeoff command')
-            request.cmd = 'takeoff'
-            self.flying = True
-            self.num_of_gates = 4
-            future = self.client.call_async(request)
-            future.add_done_callback(self.service_response_callback)
+        # How large area is considered to be midpoint good enough
+        height_threshold = image_height / 9
+        width_threshold = image_width / 9
 
-            time.sleep(1.5)
+        red_mask = self.create_mask(frame, 'red')
+        edges = cv2.Canny(red_mask, 50, 150)
+        # Find contours in the edge-detected image
+        contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-            msg = String()
-            self.get_logger().info('Sending up command')
-            msg.data = 'up'
-            self.publication.publish(msg)
-            time.sleep(1.5)
+        # Calculate the center of the red area
+        moments = cv2.moments(red_mask)
+        if moments["m00"] != 0:
+            center_x = int(moments["m10"] / moments["m00"])
+            center_y = int(moments["m01"] / moments["m00"])
+            cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
+            cv2.putText(frame, f"Center: ({center_x}, {center_y})", (center_x + 10, center_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+        else:
+            center_x, center_y = None, None
 
-        if False and self.detect_takeoff_signal(frame):
-            while not self.client.wait_for_service(timeout_sec=1.0):
-                print('Service not available, waiting...')
-            request = TelloAction.Request()
-            if not self.flying:
-                self.get_logger().info('Takeoff command')
-                request.cmd = 'takeoff'
-                self.flying = True
-            else:
-                self.get_logger().info('Land command')
-                request.cmd = 'land'
-                #self.flying = False
-            future = self.client.call_async(request)
-            future.add_done_callback(self.service_response_callback)
-        if self.num_of_gates == 4:
-            if self.detect_stop_signal(frame):
-                while not self.client.wait_for_service(timeout_sec=1.0):
-                    print('Service not available, waiting...')
+        # If the center of the red area is found, check if it is aligned
+        if center_x is not None and center_y is not None:
+            aligned = True
+            # Check error in height and width
+            error_height = center_y - image_center_height
+            error_width = center_x - image_center_width
+            # Check horizontal and vertical misalignment, the functions handle the movement if necessary
+            if abs(error_height) > height_threshold:
+                aligned = False
+                self.check_up_down(error_height, height_threshold)
+            if abs(error_width) > width_threshold:
+                aligned = False
+                self.check_right_left(error_width, width_threshold)
 
-                request = TelloAction.Request()
-                self.get_logger().info('Sending land command')
-                request.cmd = 'land'
-                #self.flying = False
-
-                future = self.client.call_async(request)
-                future.add_done_callback(self.service_response_callback)
-            else:
-                self.find_stop_signal(frame)
-
-        if self.num_of_gates > 4:
-            self.detect_gate(frame)
-
-        self.processing_image = False
+            # If the red area is aligned, move forward
+            if aligned:
+                print("aligned with red area")
+                msg = String()
+                msg.data = "forward"
+                self.publication.publish(msg)
+                time.sleep(1.5) # stabilization time
     
     # Check for the takeoff signal (mostly yellow screen). If found, send a takeoff command
     def detect_takeoff_signal(self, image):
@@ -194,7 +253,7 @@ class GateDetector(Node):
         image_height = frame.shape[0]
         image_width = frame.shape[1]
 
-        # Image centerpoint, a bit higher than the middle of the image because the camera points down
+        # Image centerpoint
         image_center_height = image_height // 2
         image_center_width = image_width // 2
 
