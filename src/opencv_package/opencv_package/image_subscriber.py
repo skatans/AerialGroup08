@@ -15,7 +15,7 @@ class ImageSubscriber(Node):
         )
         self.subscription = self.create_subscription(
             Image,
-            '/drone1/image_raw',
+            '/larggest_gate',
             self.listener_callback,
             qos_profile=qos_profile)
         self.br = CvBridge()
