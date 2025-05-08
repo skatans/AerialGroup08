@@ -39,22 +39,23 @@ class CommandSubscriber(Node):
             self.get_logger().info('Turning right')
             pub_msg.angular.z = -0.25
             self.publisher.publish(pub_msg)
+        elif (msg.data == "rightbig"):
+            self.get_logger().info('Turning right a lot')
+            pub_msg.angular.z = -0.6
+            self.publisher.publish(pub_msg)
+        elif (msg.data == "rightsmall"):
+            self.get_logger().info('Turning right a little')
+            pub_msg.angular.z = -0.15
+            self.publisher.publish(pub_msg)
         elif (msg.data == "forward"):
             self.get_logger().info('Going forward')
-            pub_msg.linear.x = 0.15
+            pub_msg.linear.x = 0.2
             self.publisher.publish(pub_msg)
         elif (msg.data == "forwardlong"):
             self.get_logger().info('Going forward long')
-            self.processing = True
-            pub_msg.linear.z = -0.15
-            self.publisher.publish(pub_msg)
-            time.sleep(1.0)
             pub_msg.linear.x = 0.4
             self.publisher.publish(pub_msg)
-            time.sleep(2.0)
-            pub_msg.linear.z = 0.15
-            self.publisher.publish(pub_msg)
-            self.processing = False
+            time.sleep(1.0)
         elif (msg.data == "back"):
             self.get_logger().info('Going back')
             pub_msg.linear.x = -0.15
