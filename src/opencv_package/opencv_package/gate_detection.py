@@ -444,30 +444,17 @@ class GateDetector(Node):
             if aligned == True:
                 msg = String()
                 # If the radius of the gate is large enough, move a lot forward
-                if self.num_of_gates<4:
-                    if (x2-x1) > 0.9*image_height:
-                        msg.data = "forwardlong"
-                        self.publication.publish(msg)
-                        time.sleep(2.5) # stabilization time
-                        self.num_of_gates = self.num_of_gates + 1
-                        print(f"GATES PASSED {self.num_of_gates}")
-                    # Otherwise take only a small step
-                    else:
-                        msg.data = "forward"
-                        self.publication.publish(msg)
-                        time.sleep(1.5) # stabilization time
+                if (x2-x1) > 0.9*image_height:
+                    msg.data = "forwardlong"
+                    self.publication.publish(msg)
+                    time.sleep(2.5) # stabilization time
+                    self.num_of_gates = self.num_of_gates + 1
+                    print(f"GATES PASSED {self.num_of_gates}")
+                # Otherwise take only a small step
                 else:
-                    if (red_x2-red_x1) > 0.9*image_height:
-                        msg.data = "forwardlong"
-                        self.publication.publish(msg)
-                        time.sleep(2.5) # stabilization time
-                        #num_of_gates = num_of_gates + 1
-                        print(f"GATES PASSED {num_of_gates}")
-                    # Otherwise take only a small step
-                    else:
-                        msg.data = "forward"
-                        self.publication.publish(msg)
-                        time.sleep(1.5) # stabilization time
+                    msg.data = "forward"
+                    self.publication.publish(msg)
+                    time.sleep(1.5) # stabilization time
         else:
             if self.num_of_gates<4:
                 #### UPDATE THE ROTATION DIRECTION BASED ON THE RACING DAY GATE ARRANGEMENT!!!
