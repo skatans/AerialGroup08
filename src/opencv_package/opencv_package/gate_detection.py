@@ -58,7 +58,7 @@ class GateDetector(Node):
             self.get_logger().info('Takeoff command')
             request.cmd = 'takeoff'
             self.flying = True
-            self.num_of_gates = 4
+            #self.num_of_gates = 4 # For stop gate testing
             future = self.client.call_async(request)
             future.add_done_callback(self.service_response_callback)
 
